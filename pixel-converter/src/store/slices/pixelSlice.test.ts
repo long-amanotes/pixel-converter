@@ -97,6 +97,84 @@ describe('pixelSlice', () => {
 
       expect(store.getState().size).toBe(256);
     });
+
+    it('should scale existing pixels when size increases', () => {
+      const store = createTestStore();
+      
+      // Set initial size and pixels
+      store.setState({ 
+        size: 32,
+        pixels: [
+          { x: 0, y: 0, r: 255, g: 0, b: 0, colorGroup: 0, group: 0, colorType: 0 },
+          { x: 16, y: 16, r: 0, g: 255, b: 0, colorGroup: 0, group: 0, colorType: 0 },
+          { x: 31, y: 31, r: 0, g: 0, b: 255, colorGroup: 0, group: 0, colorType: 0 },
+        ]
+      });
+
+      // Double the size
+      store.getState().setSize(64);
+
+      const state = store.getState();
+      expect(state.size).toBe(64);
+      expect(state.pixels).toHaveLength(3);
+      
+      // Pixels should be scaled proportionally
+      expect(state.pixels[0]!.x).toBe(0);
+      expect(state.pixels[0]!.y).toBe(0);
+      expect(state.pixels[1]!.x).toBe(32);
+      expect(state.pixels[1]!.y).toBe(32);
+      expect(state.pixels[2]!.x).toBe(62);
+      expect(state.pixels[2]!.y).toBe(62);
+      
+      // Colors should remain unchanged
+      expect(state.pixels[0]!.r).toBe(255);
+      expect(state.pixels[1]!.g).toBe(255);
+      expect(state.pixels[2]!.b).toBe(255);
+    });
+
+    it('should scale existing pixels when size decreases', () => {
+      const store = createTestStore();
+      
+      // Set initial size and pixels
+      store.setState({ 
+        size: 64,
+        pixels: [
+          { x: 0, y: 0, r: 255, g: 0, b: 0, colorGroup: 0, group: 0, colorType: 0 },
+          { x: 32, y: 32, r: 0, g: 255, b: 0, colorGroup: 0, group: 0, colorType: 0 },
+          { x: 63, y: 63, r: 0, g: 0, b: 255, colorGroup: 0, group: 0, colorType: 0 },
+        ]
+      });
+
+      // Halve the size
+      store.getState().setSize(32);
+
+      const state = store.getState();
+      expect(state.size).toBe(32);
+      expect(state.pixels).toHaveLength(3);
+      
+      // Pixels should be scaled proportionally
+      expect(state.pixels[0]!.x).toBe(0);
+      expect(state.pixels[0]!.y).toBe(0);
+      expect(state.pixels[1]!.x).toBe(16);
+      expect(state.pixels[1]!.y).toBe(16);
+      expect(state.pixels[2]!.x).toBe(31);
+      expect(state.pixels[2]!.y).toBe(31);
+      
+      // Colors should remain unchanged
+      expect(state.pixels[0]!.r).toBe(255);
+      expect(state.pixels[1]!.g).toBe(255);
+      expect(state.pixels[2]!.b).toBe(255);
+    });
+
+    it('should not scale pixels when there are no pixels', () => {
+      const store = createTestStore();
+      
+      store.setState({ size: 32, pixels: [] });
+      store.getState().setSize(64);
+
+      expect(store.getState().size).toBe(64);
+      expect(store.getState().pixels).toHaveLength(0);
+    });
   });
 
   describe('importFromJSON', () => {

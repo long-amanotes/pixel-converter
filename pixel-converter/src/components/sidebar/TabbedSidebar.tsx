@@ -38,25 +38,48 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
 
   return (
     <Paper
-      elevation={2}
+      elevation={3}
       sx={{
         width,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        borderRadius: 3,
+        border: '1px solid',
+        borderColor: 'divider',
       }}
     >
       <Box
         sx={{
-          px: 2,
-          pt: 2,
-          pb: 1,
-          borderBottom: '1px solid',
+          px: 2.5,
+          pt: 2.5,
+          pb: 1.5,
+          borderBottom: '2px solid',
           borderColor: 'divider',
+          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '2px',
+            background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+          },
         }}
       >
-        <Typography variant="subtitle2" fontWeight={700}>
+        <Typography 
+          variant="subtitle1" 
+          fontWeight={700}
+          sx={{
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+            fontSize: '0.875rem',
+            color: 'text.primary',
+          }}
+        >
           {title}
         </Typography>
       </Box>
@@ -73,8 +96,30 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
         scrollButtons="auto"
         sx={{
           px: 1,
-          minHeight: 44,
-          '& .MuiTab-root': { minHeight: 44 },
+          minHeight: 48,
+          bgcolor: 'background.paper',
+          '& .MuiTab-root': { 
+            minHeight: 48,
+            fontWeight: 600,
+            fontSize: '0.8125rem',
+            textTransform: 'none',
+            transition: 'all 0.3s ease',
+            borderRadius: 2,
+            mx: 0.5,
+            '&:hover': {
+              bgcolor: 'action.hover',
+              transform: 'translateY(-2px)',
+            },
+            '&.Mui-selected': {
+              color: 'primary.main',
+              bgcolor: 'action.selected',
+            },
+          },
+          '& .MuiTabs-indicator': {
+            height: 3,
+            borderRadius: '3px 3px 0 0',
+            background: 'linear-gradient(90deg, #2196F3 0%, #9C27B0 100%)',
+          },
         }}
       >
         {tabs.map((t) => (

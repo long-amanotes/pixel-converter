@@ -11,21 +11,14 @@ export const ColorModeContext = createContext<ColorModeContextType>({} as ColorM
 
 export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const colorModeFromLocalStorage = localStorage.getItem('colorMode');
-  const isSystemPreferenceDark = window?.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  const systemPreference = isSystemPreferenceDark ? 'dark' : 'light';
-  const [mode, setMode] = useState(colorModeFromLocalStorage || systemPreference);
+  const [mode, setMode] = useState(colorModeFromLocalStorage || 'light');
 
   useEffect(() => {
     window.localStorage.setItem('colorMode', mode);
   }, [mode]);
 
   const setColorMode = () => {
-    if (mode === 'light') {
-      setMode('dark');
-    } else {
-      setMode('light');
-    }
+    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
   };
 
   const theme = useMemo(() => {
@@ -37,11 +30,23 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({ children
         fontFamily:
           'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
       },
+      transitions: {
+        duration: {
+          shortest: 150,
+          shorter: 200,
+          short: 250,
+          standard: 300,
+          complex: 375,
+          enteringScreen: 225,
+          leavingScreen: 195,
+        },
+      },
       components: {
         MuiPaper: {
           styleOverrides: {
             root: {
               backgroundImage: 'none',
+              transition: 'background-color 0.3s ease, color 0.3s ease',
             },
           },
         },
@@ -53,6 +58,13 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({ children
         },
         MuiFormControl: {
           defaultProps: { size: 'small' },
+        },
+        MuiAppBar: {
+          styleOverrides: {
+            root: {
+              transition: 'background-color 0.3s ease, color 0.3s ease',
+            },
+          },
         },
       },
     });

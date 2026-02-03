@@ -28,11 +28,32 @@ export const createPixelSlice: StateCreator<
       pixels,
     })),
 
-  setSize: (size: number) =>
-    set(() => ({
+  setSize: (newSize: number) =>
+    set((state) => {
       // Clamp size between 8 and 256 as per requirements
-      size: Math.max(8, Math.min(256, size)),
-    })),
+      const clampedSize = Math.max(8, Math.min(256, newSize));
+      const oldSize = state.size;
+      
+      // If size hasn't changed or there are no pixels, just update the size
+      if (clampedSize === oldSize || state.pixels.length === 0) {
+        return { size: clampedSize };
+      }
+      
+      // Calculate the scale factor
+      const scaleFactor = clampedSize / oldSize;
+      
+      // Scale all existing pixels to the new size
+      const scaledPixels = state.pixels.map((pixel) => ({
+        ...pixel,
+        x: Math.floor(pixel.x * scaleFactor),
+        y: Math.floor(pixel.y * scaleFactor),
+      }));
+      
+      return {
+        size: clampedSize,
+        pixels: scaledPixels,
+      };
+    }),
 
   /**
    * Import pixel art data from JSON
