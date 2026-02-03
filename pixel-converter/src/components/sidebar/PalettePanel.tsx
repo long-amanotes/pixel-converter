@@ -6,9 +6,10 @@
  * - 4.2: Add new color picker to the palette
  */
 
-import { Box, Button, Typography, Paper } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Box, Button, Typography, Paper, TextField, IconButton, Tooltip } from '@mui/material';
+import { Add as AddIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 import { useStore } from '../../store';
+import { useState } from 'react';
 
 /**
  * Palette panel component
@@ -19,11 +20,31 @@ export const PalettePanel = () => {
   const addPaletteColor = useStore((state) => state.addPaletteColor);
   const updatePaletteColor = useStore((state) => state.updatePaletteColor);
   const regroup = useStore((state) => state.regroup);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const handleColorChange = (index: number, color: string) => {
     updatePaletteColor(index, color);
     // Automatically regroup pixels when palette color changes (Requirement 4.3)
     regroup();
+  };
+
+  const handleHexInput = (index: number, value: string) => {
+    // Allow typing without # prefix
+    let hex = value.trim();
+    if (!hex.startsWith('#')) {
+      hex = '#' + hex;
+    }
+    
+    // Validate hex color format
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+      handleColorChange(index, hex.toUpperCase());
+    }
+  };
+
+  const handleCopyHex = (index: number, color: string) => {
+    navigator.clipboard.writeText(color.toUpperCase());
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 1500);
   };
 
   const handleAddColor = () => {
@@ -50,14 +71,14 @@ export const PalettePanel = () => {
         Palette
       </Typography>
       
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
         {palette.map((color, index) => (
           <Box
             key={index}
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 0.5,
+              gap: 1,
             }}
           >
             <input
@@ -70,10 +91,40 @@ export const PalettePanel = () => {
                 border: '1px solid #ddd',
                 borderRadius: 6,
                 cursor: 'pointer',
-                margin: 4,
+                flexShrink: 0,
               }}
               title={`Color ${index + 1}: ${color.toUpperCase()}`}
             />
+            <TextField
+              value={color.toUpperCase()}
+              onChange={(e) => handleHexInput(index, e.target.value)}
+              size="small"
+              placeholder="#FFFFFF"
+              sx={{
+                flex: 1,
+                '& .MuiInputBase-input': {
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  padding: '8px 10px',
+                },
+              }}
+              inputProps={{
+                maxLength: 7,
+                style: { textTransform: 'uppercase' },
+              }}
+            />
+            <Tooltip title={copiedIndex === index ? 'Copied!' : 'Copy hex'}>
+              <IconButton
+                size="small"
+                onClick={() => handleCopyHex(index, color)}
+                sx={{
+                  color: copiedIndex === index ? 'success.main' : 'action.active',
+                  transition: 'color 0.2s',
+                }}
+              >
+                <CopyIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Box>
         ))}
       </Box>
