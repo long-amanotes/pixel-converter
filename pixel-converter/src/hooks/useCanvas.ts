@@ -25,8 +25,8 @@ export interface UseCanvasOptions {
 
 export interface UseCanvasReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  handleMouseDown: (event: React.MouseEvent<HTMLCanvasElement>) => void;
-  handleMouseMove: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+  handleMouseDown: (event: React.MouseEvent) => void;
+  handleMouseMove: (event: React.MouseEvent) => void;
   handleMouseUp: () => void;
 }
 
@@ -203,9 +203,9 @@ export const useCanvas = ({
    * Requirement 3.7: Display selection rectangle with dashed border during drag
    */
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent<HTMLCanvasElement>) => {
+    (event: React.MouseEvent) => {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas || !pixels.length) return;
 
       const rect = canvas.getBoundingClientRect();
       const canvasX = event.clientX - rect.left;
@@ -222,7 +222,7 @@ export const useCanvas = ({
       // Start dragging
       setDragState(true, pixelCoords, pixelCoords);
     },
-    [canvasToPixelCoords, setDragState]
+    [canvasToPixelCoords, setDragState, pixels.length]
   );
 
   /**
@@ -230,7 +230,7 @@ export const useCanvas = ({
    * Requirement 3.7: Display selection rectangle with dashed border during drag
    */
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLCanvasElement>) => {
+    (event: React.MouseEvent) => {
       if (!isDragging) return;
 
       const canvas = canvasRef.current;

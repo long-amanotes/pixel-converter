@@ -54,6 +54,10 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
       ref={containerRef}
       onDragOver={onDragOver}
       onDrop={onDrop}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
       sx={{
         width: '100%',
         height: '100%',
@@ -120,14 +124,11 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
       )}
       <canvas
         ref={canvasRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp} // Treat mouse leave as mouse up
         style={{
           // Pixelated rendering CSS (Req 3.1)
           imageRendering: 'pixelated',
           border: '1px solid rgba(0, 0, 0, 0.25)',
+          borderRadius: '8px',
           cursor: 'crosshair',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
           background: 'transparent',
