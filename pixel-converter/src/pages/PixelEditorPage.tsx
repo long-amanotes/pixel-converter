@@ -8,7 +8,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { Box, Drawer, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Drawer, useMediaQuery, useTheme, CircularProgress, Typography } from '@mui/material';
 import {
   Category as CategoryIcon,
   DataObject as DataObjectIcon,
@@ -26,7 +26,7 @@ import { ExportImportPanel } from '../components/sidebar/ExportImportPanel';
 import { PalettePanel } from '../components/sidebar/PalettePanel';
 import { ToolbarComponent } from '../components/toolbar';
 import { useToast } from '../contexts/toast';
-import { useImageLoader } from '../hooks/useImageLoader';
+import { useImageLoader, useStorageRestore } from '../hooks';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
 /**
@@ -41,6 +41,9 @@ export const PixelEditorPage = () => {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const { notify } = useToast();
+
+  // Restore saved state from localStorage
+  const { isRestoring, hasSavedData } = useStorageRestore();
 
   // Initialize image loading capabilities (file upload, drag-drop, paste)
   const { handleFileInput, handleDragOver, handleDrop } = useImageLoader({
@@ -111,61 +114,81 @@ export const PixelEditorPage = () => {
         bgcolor: 'background.default',
       }}
     >
-      <Box sx={{ flexShrink: 0 }}>
-        {isNarrow ? (
-          <ToolbarComponent
-            onFileInputChange={handleFileInput}
-            onOpenHelp={() => setIsHelpOpen(true)}
-            onToggleSidebar={() => {
-              setIsSidebarOpen((v) => !v);
-            }}
-          />
-        ) : (
-          <ToolbarComponent
-            onFileInputChange={handleFileInput}
-            onOpenHelp={() => setIsHelpOpen(true)}
-          />
-        )}
-      </Box>
-
-      <Box
-        sx={{
-          flex: 1,
-          display: 'flex',
-          overflow: 'hidden',
-          gap: 2,
-          p: 2,
-          minHeight: 0,
-        }}
-      >
+      {isRestoring ? (
         <Box
           sx={{
-            flex: 1,
-            minWidth: 0,
-            minHeight: 0,
             display: 'flex',
             flexDirection: 'column',
-            position: 'relative',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            gap: 2,
           }}
         >
-          <CanvasComponent onDragOver={handleDragOver} onDrop={handleDrop} />
+          <CircularProgress />
+          <Typography variant="body2" color="text.secondary">
+            Restoring your work...
+          </Typography>
         </Box>
+      ) : (
+        <>
+          <Box sx={{ flexShrink: 0 }}>
+            {isNarrow ? (
+              <ToolbarComponent
+                onFileInputChange={handleFileInput}
+                onOpenHelp={() => setIsHelpOpen(true)}
+                onToggleSidebar={() => {
+                  setIsSidebarOpen((v) => !v);
+                }}
+              />
+            ) : (
+              <ToolbarComponent
+                onFileInputChange={handleFileInput}
+                onOpenHelp={() => setIsHelpOpen(true)}
+              />
+            )}
+          </Box>
 
-        {isNarrow ? (
-          <Drawer
-            anchor="right"
-            open={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            PaperProps={{ sx: { width: 400, maxWidth: '100vw' } }}
+          <Box
+            sx={{
+              flex: 1,
+              display: 'flex',
+              overflow: 'hidden',
+              gap: 2,
+              p: 2,
+              minHeight: 0,
+            }}
           >
-            <Box sx={{ height: '100%', p: 2 }}>{sidebar}</Box>
-          </Drawer>
-        ) : (
-          <Box sx={{ flexShrink: 0 }}>{sidebar}</Box>
-        )}
-      </Box>
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                minHeight: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+              }}
+            >
+              <CanvasComponent onDragOver={handleDragOver} onDrop={handleDrop} />
+            </Box>
 
-      <HintPanel open={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+            {isNarrow ? (
+              <Drawer
+                anchor="right"
+                open={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+                PaperProps={{ sx: { width: 400, maxWidth: '100vw' } }}
+              >
+                <Box sx={{ height: '100%', p: 2 }}>{sidebar}</Box>
+              </Drawer>
+            ) : (
+              <Box sx={{ flexShrink: 0 }}>{sidebar}</Box>
+            )}
+          </Box>
+
+          <HintPanel open={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+        </>
+      )}
     </Box>
   );
 };

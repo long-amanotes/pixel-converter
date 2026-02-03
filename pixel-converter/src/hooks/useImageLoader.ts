@@ -17,6 +17,7 @@
 import { useCallback, useEffect } from 'react';
 import { useStore } from '../store';
 import { blockMajorityConvert, nearestNeighborConvert } from '../utils/imageConverter';
+import { saveImageToStorage } from '../utils/storageUtils';
 
 export interface UseImageLoaderOptions {
   /**
@@ -133,6 +134,9 @@ export const useImageLoader = ({
       
       // Store the original image reference
       setOriginalImage(image);
+      
+      // Save image to localStorage for persistence
+      saveImageToStorage(image);
       
       // Regroup pixels based on current palette
       regroup();

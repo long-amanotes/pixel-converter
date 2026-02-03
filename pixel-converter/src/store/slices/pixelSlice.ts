@@ -7,6 +7,7 @@ import type { StateCreator } from 'zustand';
 import type { Pixel, ExportedData } from '../../types';
 import type { PixelSlice, PixelConverterState } from '../types';
 import { importJSON } from '../../utils/importUtils';
+import { blockMajorityConvert, nearestNeighborConvert } from '../../utils/imageConverter';
 
 /**
  * Creates the pixel slice for the Zustand store
@@ -34,15 +35,42 @@ export const createPixelSlice: StateCreator<
       const clampedSize = Math.max(8, Math.min(256, newSize));
       const oldSize = state.size;
       
-      // If size hasn't changed or there are no pixels, just update the size
-      if (clampedSize === oldSize || state.pixels.length === 0) {
+      // If size hasn't changed, do nothing
+      if (clampedSize === oldSize) {
+        return state;
+      }
+      
+      // If there's an original image, reconvert it at the new size
+      // This preserves quality better than scaling existing pixels
+      if (state.originalImage) {
+        const canvas = document.createElement('canvas');
+        canvas.width = state.originalImage.width;
+        canvas.height = state.originalImage.height;
+        
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(state.originalImage, 0, 0);
+          const imageData = ctx.getImageData(0, 0, state.originalImage.width, state.originalImage.height);
+          
+          // Reconvert using the current scale mode
+          const pixels = state.scaleMode === 'majority'
+            ? blockMajorityConvert(imageData, clampedSize)
+            : nearestNeighborConvert(imageData, clampedSize);
+          
+          return {
+            size: clampedSize,
+            pixels,
+          };
+        }
+      }
+      
+      // If no original image or no pixels, just update the size
+      if (state.pixels.length === 0) {
         return { size: clampedSize };
       }
       
-      // Calculate the scale factor
+      // Fallback: Scale existing pixels (lower quality but works without original)
       const scaleFactor = clampedSize / oldSize;
-      
-      // Scale all existing pixels to the new size
       const scaledPixels = state.pixels.map((pixel) => ({
         ...pixel,
         x: Math.floor(pixel.x * scaleFactor),

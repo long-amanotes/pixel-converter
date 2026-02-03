@@ -12,10 +12,12 @@ import {
   Download as DownloadIcon,
   Image as ImageIcon,
   Upload as UploadIcon,
+  DeleteForever as DeleteForeverIcon,
 } from '@mui/icons-material';
 import { useStore } from '../../store';
 import { exportJSON, exportPNG, downloadJSON } from '../../utils/exportUtils';
 import { readJSONFile, importJSON, ImportValidationError } from '../../utils/importUtils';
+import { clearStorage, hasStoredData } from '../../utils/storageUtils';
 import { useToast } from '../../contexts/toast';
 import { useState, useRef } from 'react';
 
@@ -35,6 +37,7 @@ export const ExportImportPanel = () => {
   const regroup = useStore((state) => state.regroup);
 
   const [jsonOutput, setJsonOutput] = useState('');
+  const [hasSavedData, setHasSavedData] = useState(hasStoredData());
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -136,6 +139,27 @@ export const ExportImportPanel = () => {
     event.target.value = '';
   };
 
+  const handleClearStorage = () => {
+    if (!window.confirm('Are you sure you want to clear all saved data? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      clearStorage();
+      setHasSavedData(false);
+      
+      notify({
+        message: 'Saved data cleared successfully',
+        severity: 'success',
+      });
+    } catch (error) {
+      notify({
+        message: `Failed to clear data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'error',
+      });
+    }
+  };
+
   return (
     <Paper elevation={0} sx={{ p: 2, bgcolor: 'transparent', boxShadow: 'none' }}>
       <Typography 
@@ -211,7 +235,7 @@ export const ExportImportPanel = () => {
         fullWidth
         size="small"
         sx={{ 
-          mb: 2,
+          mb: 1,
           '&:hover': {
             transform: 'translateY(-1px)',
           },
@@ -223,6 +247,30 @@ export const ExportImportPanel = () => {
       >
         Import JSON
       </Button>
+
+      {/* Clear Storage Button */}
+      {hasSavedData && (
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={<DeleteForeverIcon />}
+          onClick={handleClearStorage}
+          fullWidth
+          size="small"
+          sx={{ 
+            mb: 2,
+            '&:hover': {
+              transform: 'translateY(-1px)',
+            },
+            '&:active': {
+              transform: 'translateY(0)',
+            },
+            transition: 'all 0.2s',
+          }}
+        >
+          Clear Saved Data
+        </Button>
+      )}
 
       {/* Hidden file input */}
       <input
