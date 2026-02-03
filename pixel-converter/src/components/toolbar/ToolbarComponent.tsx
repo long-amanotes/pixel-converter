@@ -257,40 +257,94 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
         onChange={handleSizeChange}
         error={sizeError}
         inputProps={{
-          min: MIN_SIZE,
           step: 1,
+          'aria-label': 'Pixel art size',
         }}
         sx={{ 
-          width: 130,
+          width: 140,
+          '& .MuiInputLabel-root': {
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            '&.Mui-focused': {
+              fontWeight: 700,
+            },
+          },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2,
-            transition: 'all 0.3s ease',
+            borderRadius: 2.5,
+            bgcolor: 'background.default',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '& fieldset': {
+              borderWidth: 2,
+              borderColor: 'divider',
+            },
             '&:hover': {
-              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.15)',
+              bgcolor: 'action.hover',
+              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)',
+              '& fieldset': {
+                borderColor: 'primary.main',
+              },
             },
             '&.Mui-focused': {
-              boxShadow: '0 4px 12px rgba(33, 150, 243, 0.25)',
+              bgcolor: 'background.paper',
+              boxShadow: '0 4px 16px rgba(33, 150, 243, 0.3)',
+              '& fieldset': {
+                borderWidth: 2,
+                borderColor: 'primary.main',
+              },
             },
+            '&.Mui-error': {
+              '& fieldset': {
+                borderColor: 'error.main',
+              },
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            fontWeight: 600,
+            fontSize: '0.95rem',
           },
         }}
         size="small"
-        helperText={sizeError ? `Must be ${MIN_SIZE}-${MAX_SIZE}` : `${MIN_SIZE}-${MAX_SIZE} pixels`}
       />
 
       {/* Scale Mode Selector */}
       <FormControl 
         size="small" 
         sx={{ 
-          minWidth: 190,
+          minWidth: 200,
+          '& .MuiInputLabel-root': {
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            '&.Mui-focused': {
+              fontWeight: 700,
+            },
+          },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2,
-            transition: 'all 0.3s ease',
+            borderRadius: 2.5,
+            bgcolor: 'background.default',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '& fieldset': {
+              borderWidth: 2,
+              borderColor: 'divider',
+            },
             '&:hover': {
-              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.15)',
+              bgcolor: 'action.hover',
+              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)',
+              '& fieldset': {
+                borderColor: 'primary.main',
+              },
             },
             '&.Mui-focused': {
-              boxShadow: '0 4px 12px rgba(33, 150, 243, 0.25)',
+              bgcolor: 'background.paper',
+              boxShadow: '0 4px 16px rgba(33, 150, 243, 0.3)',
+              '& fieldset': {
+                borderWidth: 2,
+                borderColor: 'primary.main',
+              },
             },
+          },
+          '& .MuiSelect-select': {
+            fontWeight: 600,
+            fontSize: '0.9rem',
           },
         }}
       >
@@ -301,6 +355,36 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           value={scaleMode}
           label="Scale Mode"
           onChange={handleScaleModeChange}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                borderRadius: 2,
+                mt: 1,
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+                '& .MuiMenuItem-root': {
+                  borderRadius: 1.5,
+                  mx: 1,
+                  my: 0.5,
+                  fontWeight: 500,
+                  fontSize: '0.9rem',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    transform: 'translateX(4px)',
+                  },
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.light',
+                    fontWeight: 700,
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText',
+                    },
+                  },
+                },
+              },
+            },
+          }}
         >
           <MenuItem value="majority">Block Majority</MenuItem>
           <MenuItem value="nearest">Nearest Neighbor</MenuItem>
@@ -311,16 +395,41 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
       <FormControl 
         size="small" 
         sx={{ 
-          minWidth: 190,
+          minWidth: 200,
+          '& .MuiInputLabel-root': {
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            '&.Mui-focused': {
+              fontWeight: 700,
+            },
+          },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2,
-            transition: 'all 0.3s ease',
+            borderRadius: 2.5,
+            bgcolor: 'background.default',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '& fieldset': {
+              borderWidth: 2,
+              borderColor: 'divider',
+            },
             '&:hover': {
-              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.15)',
+              bgcolor: 'action.hover',
+              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)',
+              '& fieldset': {
+                borderColor: 'primary.main',
+              },
             },
             '&.Mui-focused': {
-              boxShadow: '0 4px 12px rgba(33, 150, 243, 0.25)',
+              bgcolor: 'background.paper',
+              boxShadow: '0 4px 16px rgba(33, 150, 243, 0.3)',
+              '& fieldset': {
+                borderWidth: 2,
+                borderColor: 'primary.main',
+              },
             },
+          },
+          '& .MuiSelect-select': {
+            fontWeight: 600,
+            fontSize: '0.9rem',
           },
         }}
       >
@@ -331,6 +440,36 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           value={editMode}
           label="Edit Mode"
           onChange={handleEditModeChange}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                borderRadius: 2,
+                mt: 1,
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+                '& .MuiMenuItem-root': {
+                  borderRadius: 1.5,
+                  mx: 1,
+                  my: 0.5,
+                  fontWeight: 500,
+                  fontSize: '0.9rem',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    transform: 'translateX(4px)',
+                  },
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.light',
+                    fontWeight: 700,
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText',
+                    },
+                  },
+                },
+              },
+            },
+          }}
         >
           <MenuItem value="group">Group Data</MenuItem>
           <MenuItem value="colorType">Color Type</MenuItem>

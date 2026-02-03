@@ -77,7 +77,7 @@ export const useCanvas = ({
    * 
    * @param canvasX - X coordinate in canvas space
    * @param canvasY - Y coordinate in canvas space
-   * @returns Pixel coordinates or null if out of bounds
+   * @returns Pixel coordinates (clamped to valid range)
    */
   const canvasToPixelCoords = useCallback(
     (canvasX: number, canvasY: number): Position | null => {
@@ -89,12 +89,11 @@ export const useCanvas = ({
       const x = Math.floor(canvasX / pixelSize);
       const y = Math.floor(canvasY / pixelSize);
 
-      // Clamp to valid pixel coordinates
-      if (x < 0 || x >= size || y < 0 || y >= size) {
-        return null;
-      }
+      // Clamp to valid pixel coordinates (allow dragging outside, but clamp to bounds)
+      const clampedX = Math.max(0, Math.min(size - 1, x));
+      const clampedY = Math.max(0, Math.min(size - 1, y));
 
-      return { x, y };
+      return { x: clampedX, y: clampedY };
     },
     [size, calculatePixelSize]
   );
@@ -212,6 +211,11 @@ export const useCanvas = ({
       const canvasX = event.clientX - rect.left;
       const canvasY = event.clientY - rect.top;
 
+      // Only start drag if clicking within canvas bounds
+      if (canvasX < 0 || canvasY < 0 || canvasX >= canvas.width || canvasY >= canvas.height) {
+        return;
+      }
+
       const pixelCoords = canvasToPixelCoords(canvasX, canvasY);
       if (!pixelCoords) return;
 
@@ -236,6 +240,7 @@ export const useCanvas = ({
       const canvasX = event.clientX - rect.left;
       const canvasY = event.clientY - rect.top;
 
+      // Allow dragging outside canvas - coordinates will be clamped to image bounds
       const pixelCoords = canvasToPixelCoords(canvasX, canvasY);
       if (!pixelCoords) return;
 
