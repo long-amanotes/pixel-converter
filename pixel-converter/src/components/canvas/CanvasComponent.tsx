@@ -21,6 +21,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useCanvas } from '../../hooks';
 import { useStore } from '../../store';
+import { FloatingPixelCount } from '../common';
 
 interface CanvasComponentProps {
   width?: number;
@@ -87,6 +88,8 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
         },
       }}
     >
+      <FloatingPixelCount />
+      
       {!hasPixels && (
         <Paper
           elevation={0}

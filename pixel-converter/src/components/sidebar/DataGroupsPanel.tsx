@@ -122,10 +122,11 @@ export const DataGroupsPanel = () => {
         sx={{
           fontSize: '14px',
           fontWeight: 600,
-          color: '#333',
+          color: 'text.primary',
           mb: 1.5,
           pb: 1,
-          borderBottom: '2px solid #e0e0e0',
+          borderBottom: '2px solid',
+          borderColor: 'divider',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
         }}
@@ -212,13 +213,13 @@ export const DataGroupsPanel = () => {
                 gap: 1,
                 p: 1.25,
                 borderRadius: '6px',
-                bgcolor: isActive ? '#e3f2fd' : '#f9f9f9',
+                bgcolor: isActive ? 'action.selected' : 'background.paper',
                 border: '2px solid',
-                borderColor: isActive ? '#2196F3' : 'transparent',
+                borderColor: isActive ? 'primary.main' : 'transparent',
                 transition: 'all 0.2s',
                 '&:hover': {
-                  bgcolor: isActive ? '#e3f2fd' : '#f0f0f0',
-                  borderColor: isActive ? '#2196F3' : '#ddd',
+                  bgcolor: isActive ? 'action.selected' : 'action.hover',
+                  borderColor: isActive ? 'primary.main' : 'divider',
                 },
               }}
             >
@@ -260,6 +261,7 @@ export const DataGroupsPanel = () => {
                     sx={{
                       cursor: group.id === 0 ? 'pointer' : 'text',
                       fontSize: '13px',
+                      color: 'text.primary',
                     }}
                   >
                     {group.name}
@@ -269,8 +271,8 @@ export const DataGroupsPanel = () => {
               <Typography
                 variant="caption"
                 sx={{
-                  bgcolor: isActive ? 'primary.main' : '#e0e0e0',
-                  color: isActive ? 'white' : 'text.secondary',
+                  bgcolor: isActive ? 'primary.main' : 'action.disabledBackground',
+                  color: isActive ? 'primary.contrastText' : 'text.secondary',
                   px: 1,
                   py: 0.5,
                   borderRadius: '12px',

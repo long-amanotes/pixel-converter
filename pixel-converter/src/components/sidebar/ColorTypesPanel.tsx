@@ -68,10 +68,11 @@ export const ColorTypesPanel = () => {
         sx={{
           fontSize: '14px',
           fontWeight: 600,
-          color: '#333',
+          color: 'text.primary',
           mb: 1.5,
           pb: 1,
-          borderBottom: '2px solid #e0e0e0',
+          borderBottom: '2px solid',
+          borderColor: 'divider',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
         }}
@@ -102,22 +103,6 @@ export const ColorTypesPanel = () => {
         Parse from Group Color
       </Button>
 
-      {/* Statistics */}
-      {totalPixels > 0 && (
-        <Box 
-          sx={{ 
-            mb: 2,
-            p: 1,
-            borderRadius: '6px',
-            bgcolor: '#f9f9f9',
-          }}
-        >
-          <Typography variant="body2" sx={{ fontSize: '13px', fontWeight: 500 }}>
-            <strong>Total pixels:</strong> {totalPixels}
-          </Typography>
-        </Box>
-      )}
-
       {/* Validation Status */}
       {totalPixels > 0 && colorTypes.length > 0 && (
         <Box
@@ -125,8 +110,8 @@ export const ColorTypesPanel = () => {
             mb: 2,
             p: 1,
             borderRadius: '6px',
-            bgcolor: isValid ? '#e8f5e9' : '#ffebee',
-            color: isValid ? '#2e7d32' : '#c62828',
+            bgcolor: isValid ? 'success.light' : 'error.light',
+            color: isValid ? 'success.dark' : 'error.dark',
             fontSize: '13px',
             fontWeight: 500,
           }}
@@ -164,13 +149,13 @@ export const ColorTypesPanel = () => {
                   p: 1.25,
                   borderRadius: '6px',
                   cursor: 'pointer',
-                  bgcolor: isActive ? '#e3f2fd' : '#f9f9f9',
+                  bgcolor: isActive ? 'action.selected' : 'background.paper',
                   border: '2px solid',
-                  borderColor: isActive ? '#2196F3' : 'transparent',
+                  borderColor: isActive ? 'primary.main' : 'transparent',
                   transition: 'all 0.2s',
                   '&:hover': {
-                    bgcolor: isActive ? '#e3f2fd' : '#f0f0f0',
-                    borderColor: isActive ? '#2196F3' : '#ddd',
+                    bgcolor: isActive ? 'action.selected' : 'action.hover',
+                    borderColor: isActive ? 'primary.main' : 'divider',
                   },
                 }}
               >
@@ -179,7 +164,8 @@ export const ColorTypesPanel = () => {
                     width: 20,
                     height: 20,
                     bgcolor: colorType.color,
-                    border: '1px solid #ddd',
+                    border: '1px solid',
+                    borderColor: 'divider',
                     borderRadius: '4px',
                     flexShrink: 0,
                   }}
@@ -190,6 +176,7 @@ export const ColorTypesPanel = () => {
                     flex: 1,
                     fontSize: '13px',
                     fontWeight: isActive ? 500 : 400,
+                    color: 'text.primary',
                   }}
                 >
                   Type {colorType.id}: {pixelCount}px

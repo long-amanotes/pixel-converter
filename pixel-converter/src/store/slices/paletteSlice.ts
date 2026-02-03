@@ -102,11 +102,17 @@ export const createPaletteSlice: StateCreator<
       // Create ColorGroup objects
       const newColorGroups: ColorGroup[] = Array.from(
         colorGroupsMap.entries()
-      ).map(([index, groupPixels]) => ({
-        index,
-        color: hexToRgb(palette[index]),
-        pixels: groupPixels,
-      }));
+      ).map(([index, groupPixels]) => {
+        const paletteColor = palette[index];
+        if (!paletteColor) {
+          throw new Error(`Palette color at index ${index} is undefined`);
+        }
+        return {
+          index,
+          color: hexToRgb(paletteColor),
+          pixels: groupPixels,
+        };
+      });
 
       // Sort by index for consistent ordering
       newColorGroups.sort((a, b) => a.index - b.index);

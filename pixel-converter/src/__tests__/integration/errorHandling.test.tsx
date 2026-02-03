@@ -4,7 +4,7 @@
  * Validates: Requirements 2.8, 10.3, 8.4
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PixelEditorPage } from '../../pages/PixelEditorPage';
 import { ToastProvider } from '../../contexts/toast';

@@ -61,6 +61,11 @@ export function blockMajorityConvert(imageData: ImageData, targetSize: number): 
           const b = data[idx + 2];
           const a = data[idx + 3];
           
+          // Skip if any value is undefined
+          if (r === undefined || g === undefined || b === undefined || a === undefined) {
+            continue;
+          }
+          
           totalPixels++;
           
           // Skip transparent pixels
@@ -151,6 +156,11 @@ export function nearestNeighborConvert(imageData: ImageData, targetSize: number)
       const g = data[idx + 1];
       const b = data[idx + 2];
       const a = data[idx + 3];
+      
+      // Skip if any value is undefined
+      if (r === undefined || g === undefined || b === undefined || a === undefined) {
+        continue;
+      }
       
       // Skip transparent pixels
       if (a < ALPHA_CUTOFF) {

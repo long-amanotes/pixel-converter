@@ -53,7 +53,7 @@
   },
   "scripts": {
     "dev": "refine dev",
-    "build": "tsc && refine build",
+    "build": "tsc --project tsconfig.build.json && refine build",
     "start": "refine start",
     "refine": "refine",
     "lint": "eslint src --ext .ts,.tsx",

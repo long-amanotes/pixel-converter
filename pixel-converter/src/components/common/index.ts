@@ -3,3 +3,4 @@
  */
 
 export { HintPanel } from './HintPanel';
+export { FloatingPixelCount } from './FloatingPixelCount';

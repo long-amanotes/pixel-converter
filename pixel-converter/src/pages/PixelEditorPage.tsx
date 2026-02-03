@@ -112,17 +112,20 @@ export const PixelEditorPage = () => {
       }}
     >
       <Box sx={{ flexShrink: 0 }}>
-        <ToolbarComponent
-          onFileInputChange={handleFileInput}
-          onOpenHelp={() => setIsHelpOpen(true)}
-          onToggleSidebar={
-            isNarrow
-              ? () => {
-                  setIsSidebarOpen((v) => !v);
-                }
-              : undefined
-          }
-        />
+        {isNarrow ? (
+          <ToolbarComponent
+            onFileInputChange={handleFileInput}
+            onOpenHelp={() => setIsHelpOpen(true)}
+            onToggleSidebar={() => {
+              setIsSidebarOpen((v) => !v);
+            }}
+          />
+        ) : (
+          <ToolbarComponent
+            onFileInputChange={handleFileInput}
+            onOpenHelp={() => setIsHelpOpen(true)}
+          />
+        )}
       </Box>
 
       <Box

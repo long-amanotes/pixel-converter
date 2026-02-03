@@ -70,7 +70,10 @@ export function findNearestPaletteColor(color: RGB, palette: string[]): number {
   let minDistance = Infinity;
   
   for (let i = 0; i < palette.length; i++) {
-    const paletteColor = hexToRgb(palette[i]);
+    const hexColor = palette[i];
+    if (!hexColor) continue;
+    
+    const paletteColor = hexToRgb(hexColor);
     const distance = colorDistance(color, paletteColor);
     
     if (distance < minDistance) {

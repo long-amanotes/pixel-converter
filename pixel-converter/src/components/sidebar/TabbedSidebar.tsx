@@ -1,10 +1,10 @@
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { ReactElement, ReactNode, useMemo, useState } from 'react';
 import { Badge, Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 
 export type SidebarTabItem = {
   id: string;
   label: string;
-  icon?: ReactNode;
+  icon?: string | ReactElement;
   badgeCount?: number;
   content: ReactNode;
 };
@@ -80,22 +80,21 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
         {tabs.map((t) => (
           <Tab
             key={t.id}
-            icon={t.icon}
-            iconPosition={t.icon ? 'start' : undefined}
-            label={
-              typeof t.badgeCount === 'number' ? (
+            {...(t.icon && { icon: t.icon })}
+            {...(t.icon && { iconPosition: 'start' as const })}
+            label={t.label}
+            {...(typeof t.badgeCount === 'number' && {
+              icon: (
                 <Badge
                   color="primary"
                   badgeContent={t.badgeCount}
                   max={999}
-                  sx={{ '& .MuiBadge-badge': { fontWeight: 700 } }}
+                  sx={{ '& .MuiBadge-badge': { fontWeight: 700, fontSize: '0.65rem' } }}
                 >
-                  <span>{t.label}</span>
+                  {t.icon || <Box sx={{ width: 20, height: 20 }} />}
                 </Badge>
-              ) : (
-                t.label
-              )
-            }
+              ),
+            })}
           />
         ))}
       </Tabs>
