@@ -8,15 +8,17 @@ import {
   DarkModeOutlined,
   LightModeOutlined,
   HelpOutline,
+  MenuBook as GuideIcon,
   GitHub as GitHubIcon,
 } from '@mui/icons-material';
 import { ColorModeContext } from '../../contexts/color-mode';
 
 type HeaderComponentProps = {
   onOpenHelp?: () => void;
+  onOpenGuide?: () => void;
 };
 
-export const HeaderComponent: React.FC<HeaderComponentProps> = ({ onOpenHelp }) => {
+export const HeaderComponent: React.FC<HeaderComponentProps> = ({ onOpenHelp, onOpenGuide }) => {
   const { mode, setMode } = useContext(ColorModeContext);
   const isDark = mode === 'dark';
 
@@ -145,6 +147,29 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ onOpenHelp }) 
             )}
           </IconButton>
         </Tooltip>
+
+        {onOpenGuide && (
+          <Tooltip title="Hướng dẫn sử dụng" arrow>
+            <IconButton
+              size="small"
+              onClick={onOpenGuide}
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: '10px',
+                bgcolor: isDark ? alpha('#FFFFFF', 0.05) : 'grey.100',
+                color: 'text.secondary',
+                transition: 'all 0.15s ease',
+                '&:hover': {
+                  bgcolor: isDark ? alpha('#3E97FF', 0.15) : alpha('#3E97FF', 0.1),
+                  color: 'primary.main',
+                },
+              }}
+            >
+              <GuideIcon sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
+        )}
 
         {onOpenHelp && (
           <Tooltip title="Help & shortcuts" arrow>
