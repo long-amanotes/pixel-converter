@@ -26,6 +26,7 @@ export const useGuidedTour = () => {
       const timer = setTimeout(() => setShowTour(true), 1500);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, []);
 
   const startTour = () => setShowTour(true);
@@ -49,26 +50,48 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
   const isDark = theme.palette.mode === 'dark';
 
   const steps: Step[] = [
+    // Welcome
     {
       target: 'body',
       content: (
         <div>
           <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>👋 Chào mừng đến Pixel Converter!</h3>
           <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Hãy cùng khám phá các tính năng chính của ứng dụng qua tour hướng dẫn này.
+            Hãy cùng khám phá các tính năng chính của ứng dụng qua tour hướng dẫn này. Tour sẽ đi qua từng phần của giao diện.
           </p>
         </div>
       ),
       placement: 'center',
       disableBeacon: true,
     },
+
+    // === TOOLBAR SECTION ===
     {
       target: '[data-tour="upload-btn"]',
       content: (
         <div>
           <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>📤 Tải ảnh lên</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Click vào đây để chọn ảnh từ máy tính. Bạn cũng có thể kéo thả ảnh vào canvas hoặc dán bằng Ctrl+V.
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Click vào đây để chọn ảnh từ máy tính.
+          </p>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Mẹo: Bạn cũng có thể kéo thả ảnh vào canvas hoặc dán bằng Ctrl+V
+          </p>
+        </div>
+      ),
+      placement: 'bottom',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="undo-btn"]',
+      content: (
+        <div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>↩️ Hoàn tác (Undo)</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Nhấn để hoàn tác thao tác vừa thực hiện. Số trong ngoặc cho biết số thao tác có thể undo.
+          </p>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            ⌨️ Phím tắt: Ctrl+Z
           </p>
         </div>
       ),
@@ -80,9 +103,15 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
       content: (
         <div>
           <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🎨 Chế độ chỉnh sửa</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Chọn chế độ làm việc: Group (nhóm pixel), Type (loại màu), Paint (tô màu), hoặc Erase (xóa).
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Chọn chế độ làm việc phù hợp với công việc của bạn:
           </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong style={{ color: '#50CD89' }}>Group</strong>: Nhóm pixel vào data group</li>
+            <li><strong style={{ color: '#7239EA' }}>Type</strong>: Gán loại màu cho pixel</li>
+            <li><strong style={{ color: '#3E97FF' }}>Paint</strong>: Tô màu lên pixel</li>
+            <li><strong style={{ color: '#F1416C' }}>Erase</strong>: Xóa pixel</li>
+          </ul>
         </div>
       ),
       placement: 'bottom',
@@ -93,73 +122,186 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
       content: (
         <div>
           <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🔍 Điều khiển Zoom</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Phóng to/thu nhỏ canvas để chỉnh sửa chi tiết. Bạn cũng có thể dùng scroll chuột.
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Kéo thanh trượt để phóng to/thu nhỏ canvas. Phạm vi từ 10% đến 200%.
+          </p>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Mẹo: Dùng scroll chuột trên canvas để zoom nhanh hơn
           </p>
         </div>
       ),
       placement: 'bottom',
       disableBeacon: true,
     },
-    {
-      target: '[data-tour="undo-btn"]',
-      content: (
-        <div>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>↩️ Hoàn tác</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Nhấn để hoàn tác thao tác vừa thực hiện. Phím tắt: Ctrl+Z
-          </p>
-        </div>
-      ),
-      placement: 'bottom',
-      disableBeacon: true,
-    },
+
+    // === CANVAS SECTION ===
     {
       target: '[data-tour="canvas-area"]',
       content: (
         <div>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🖼️ Canvas</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Đây là vùng làm việc chính. Kéo chuột để chọn pixel, click để tương tác với từng pixel.
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🖼️ Canvas - Vùng làm việc chính</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Đây là nơi hiển thị và chỉnh sửa pixel art của bạn.
+          </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong>Kéo chuột</strong>: Chọn vùng pixel</li>
+            <li><strong>Click</strong>: Chọn/tương tác pixel đơn lẻ</li>
+            <li><strong>Kéo thả ảnh</strong>: Tải ảnh mới</li>
+          </ul>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Nền ô vuông giúp bạn nhận biết vùng trong suốt
           </p>
         </div>
       ),
       placement: 'left',
       disableBeacon: true,
     },
+
+    // === SIDEBAR SECTION ===
     {
       target: '[data-tour="sidebar-tabs"]',
       content: (
         <div>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>📑 Sidebar Panels</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Chuyển đổi giữa các panel: Palette (bảng màu), Groups (nhóm), Types (loại), Data (dữ liệu), Export (xuất file).
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>📑 Workspace Tabs</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Sidebar chứa 5 panel chức năng. Click vào tab để chuyển đổi:
           </p>
+          <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong>Palette</strong>: Quản lý bảng màu</li>
+            <li><strong>Groups</strong>: Xem nhóm màu tự động</li>
+            <li><strong>Types</strong>: Quản lý loại màu</li>
+            <li><strong>Data</strong>: Quản lý data groups</li>
+            <li><strong>Export</strong>: Xuất/nhập file</li>
+          </ul>
         </div>
       ),
       placement: 'left',
       disableBeacon: true,
     },
+
+    // === PALETTE PANEL ===
     {
       target: '[data-tour="palette-panel"]',
       content: (
         <div>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🎨 Bảng màu</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Quản lý các màu trong ảnh. Click để chọn màu vẽ, double-click để chỉnh sửa màu.
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🎨 Panel Palette</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Quản lý bảng màu của ảnh pixel art:
+          </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong>Ô màu</strong>: Click để mở color picker</li>
+            <li><strong>Mã HEX</strong>: Nhập trực tiếp mã màu</li>
+            <li><strong>Nút Copy</strong>: Sao chép mã màu</li>
+            <li><strong>Nút Delete</strong>: Xóa màu khỏi palette</li>
+            <li><strong>Add Color</strong>: Thêm màu mới</li>
+          </ul>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Khi thay đổi màu, các pixel sử dụng màu đó sẽ tự động cập nhật
           </p>
         </div>
       ),
       placement: 'left',
       disableBeacon: true,
     },
+
+    // === COLOR GROUPS ===
+    {
+      target: '[data-tour="sidebar-tabs"]',
+      content: (
+        <div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🎯 Tab Groups - Nhóm màu tự động</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Hệ thống tự động nhóm các pixel theo màu sắc:
+          </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li>Hiển thị tất cả màu có trong ảnh</li>
+            <li>Số lượng pixel cho mỗi màu</li>
+            <li><strong>Click vào nhóm</strong>: Lọc/highlight pixel trên canvas</li>
+          </ul>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Hữu ích để xem phân bố màu trong ảnh
+          </p>
+        </div>
+      ),
+      placement: 'left',
+      disableBeacon: true,
+    },
+
+    // === COLOR TYPES ===
+    {
+      target: '[data-tour="sidebar-tabs"]',
+      content: (
+        <div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🏷️ Tab Types - Phân loại màu</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Gán nhãn/loại cho các pixel (ví dụ: nền, viền, highlight):
+          </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong>Tạo type mới</strong>: Đặt tên và chọn màu đại diện</li>
+            <li><strong>Gán pixel</strong>: Chọn mode "Type", kéo chọn vùng trên canvas</li>
+            <li><strong>Xem thống kê</strong>: Số pixel thuộc mỗi type</li>
+          </ul>
+        </div>
+      ),
+      placement: 'left',
+      disableBeacon: true,
+    },
+
+    // === DATA GROUPS ===
+    {
+      target: '[data-tour="sidebar-tabs"]',
+      content: (
+        <div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>📦 Tab Data - Nhóm dữ liệu</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Tổ chức pixel thành các nhóm dữ liệu có ý nghĩa:
+          </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong>Tạo group</strong>: Đặt tên cho nhóm pixel</li>
+            <li><strong>Gán pixel</strong>: Chọn mode "Group", kéo chọn vùng</li>
+            <li><strong>Ứng dụng</strong>: Phân vùng sprite, tách layer</li>
+          </ul>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Data groups được lưu khi export JSON
+          </p>
+        </div>
+      ),
+      placement: 'left',
+      disableBeacon: true,
+    },
+
+    // === EXPORT/IMPORT ===
+    {
+      target: '[data-tour="sidebar-tabs"]',
+      content: (
+        <div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>💾 Tab Export - Xuất/Nhập file</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Lưu và chia sẻ công việc của bạn:
+          </p>
+          <ul style={{ margin: '0 0 8px 0', paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li><strong>Export JSON</strong>: Lưu toàn bộ dữ liệu (pixel, palette, groups, types)</li>
+            <li><strong>Export PNG</strong>: Xuất ảnh pixel art</li>
+            <li><strong>Import JSON</strong>: Tải lại project đã lưu</li>
+            <li><strong>Clear Data</strong>: Xóa dữ liệu đã lưu trong trình duyệt</li>
+          </ul>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Dữ liệu tự động lưu vào localStorage khi bạn làm việc
+          </p>
+        </div>
+      ),
+      placement: 'left',
+      disableBeacon: true,
+    },
+
+    // === HEADER BUTTONS ===
     {
       target: '[data-tour="theme-toggle"]',
       content: (
         <div>
           <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🌓 Đổi giao diện</h3>
           <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Chuyển đổi giữa chế độ sáng và tối theo sở thích của bạn.
+            Chuyển đổi giữa chế độ sáng (Light) và tối (Dark) theo sở thích của bạn.
           </p>
         </div>
       ),
@@ -171,21 +313,31 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
       content: (
         <div>
           <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>📖 Hướng dẫn chi tiết</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
-            Click vào đây bất cứ lúc nào để xem hướng dẫn sử dụng đầy đủ.
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
+            Click vào đây bất cứ lúc nào để:
           </p>
+          <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.8rem', opacity: 0.85 }}>
+            <li>Xem hướng dẫn sử dụng đầy đủ</li>
+            <li>Tra cứu phím tắt</li>
+            <li>Chạy lại tour hướng dẫn này</li>
+          </ul>
         </div>
       ),
       placement: 'bottom',
       disableBeacon: true,
     },
+
+    // Finish
     {
       target: 'body',
       content: (
         <div>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🎉 Hoàn thành!</h3>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.85 }}>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>🎉 Hoàn thành tour!</h3>
+          <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem', opacity: 0.85 }}>
             Bạn đã sẵn sàng sử dụng Pixel Converter. Hãy bắt đầu bằng cách tải một ảnh lên!
+          </p>
+          <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7, fontStyle: 'italic' }}>
+            💡 Nhấn nút 📖 trên header để xem lại hướng dẫn hoặc chạy lại tour bất cứ lúc nào.
           </p>
         </div>
       ),
@@ -221,7 +373,7 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
         close: 'Đóng',
         last: 'Hoàn thành',
         next: 'Tiếp theo',
-        skip: 'Bỏ qua',
+        skip: 'Bỏ qua tour',
       }}
       styles={{
         options: {
@@ -237,6 +389,7 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
           padding: 20,
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
           border: `1px solid ${isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08)}`,
+          maxWidth: 420,
         },
         tooltipContainer: {
           textAlign: 'left',
@@ -251,14 +404,14 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
         },
         buttonNext: {
           borderRadius: 8,
-          padding: '8px 16px',
+          padding: '10px 20px',
           fontSize: '0.875rem',
           fontWeight: 600,
           background: 'linear-gradient(135deg, #3E97FF 0%, #2884EF 100%)',
         },
         buttonBack: {
           borderRadius: 8,
-          padding: '8px 16px',
+          padding: '10px 20px',
           fontSize: '0.875rem',
           fontWeight: 500,
           color: isDark ? '#FFFFFF' : '#1B1B29',
@@ -266,8 +419,8 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({ run, onFinish }) => {
         },
         buttonSkip: {
           borderRadius: 8,
-          padding: '8px 16px',
-          fontSize: '0.875rem',
+          padding: '10px 16px',
+          fontSize: '0.8125rem',
           fontWeight: 500,
           color: isDark ? alpha('#FFFFFF', 0.6) : alpha('#000000', 0.5),
         },
