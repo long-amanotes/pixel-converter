@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode, useMemo, useState, memo, useCallback } from 'react';
-import { Badge, Box, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { Badge, Box, Tab, Tabs, Typography, alpha, useTheme } from '@mui/material';
 
 export type SidebarTabItem = {
   id: string;
@@ -24,6 +24,8 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
   initialTabId,
   onTabChange,
 }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const tabIds = useMemo(() => tabs.map((t) => t.id), [tabs]);
 
   const [activeTabId, setActiveTabId] = useState(() => {
@@ -47,80 +49,83 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
   );
 
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
         width,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        borderRadius: '16px',
+        borderRadius: '12px',
         border: '1px solid',
         borderColor: 'divider',
-        bgcolor: 'background.paper',
-        boxShadow: (theme) => theme.palette.mode === 'dark' 
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF',
+        boxShadow: isDark 
           ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
           : '0 4px 20px rgba(0, 0, 0, 0.06)',
       }}
     >
+      {/* Header */}
       <Box
         sx={{
           px: 2.5,
           py: 2,
           borderBottom: '1px solid',
           borderColor: 'divider',
-          bgcolor: 'grey.50',
+          bgcolor: isDark ? alpha('#FFFFFF', 0.02) : alpha('#000000', 0.01),
         }}
       >
         <Typography 
-          variant="subtitle1" 
-          fontWeight={600}
+          variant="subtitle2" 
           sx={{
-            fontSize: '0.9375rem',
-            color: 'text.primary',
+            fontSize: '0.6875rem',
+            fontWeight: 700,
+            color: 'text.secondary',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
           }}
         >
           {title}
         </Typography>
       </Box>
 
+      {/* Tabs */}
       <Tabs
         value={activeIndex}
         onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
-        aria-label="Sidebar navigation tabs"
         sx={{
-          px: 1.5,
-          py: 0.5,
           minHeight: 44,
-          bgcolor: 'background.paper',
+          bgcolor: isDark ? alpha('#FFFFFF', 0.02) : alpha('#000000', 0.01),
           borderBottom: '1px solid',
           borderColor: 'divider',
+          '& .MuiTabs-flexContainer': {
+            gap: 0,
+          },
           '& .MuiTab-root': { 
-            minHeight: 40,
-            fontWeight: 500,
-            fontSize: '0.8125rem',
+            minHeight: 44,
+            minWidth: 'auto',
+            fontWeight: 600,
+            fontSize: '0.75rem',
             textTransform: 'none',
             transition: 'all 0.15s ease',
-            borderRadius: '8px',
-            mx: 0.25,
-            px: 1.5,
+            px: 2,
+            py: 1.25,
             color: 'text.secondary',
             '&:hover': {
-              bgcolor: 'grey.100',
+              bgcolor: isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.03),
               color: 'text.primary',
             },
             '&.Mui-selected': {
               color: 'primary.main',
-              fontWeight: 600,
+              bgcolor: isDark ? alpha('#3E97FF', 0.1) : alpha('#3E97FF', 0.06),
             },
           },
           '& .MuiTabs-indicator': {
             height: 2,
-            borderRadius: '2px 2px 0 0',
             bgcolor: 'primary.main',
+            borderRadius: '2px 2px 0 0',
           },
         }}
       >
@@ -139,9 +144,9 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
                   color="primary"
                   badgeContent={t.badgeCount}
                   max={999}
-                  sx={{ '& .MuiBadge-badge': { fontWeight: 700, fontSize: '0.65rem' } }}
+                  sx={{ '& .MuiBadge-badge': { fontWeight: 700, fontSize: '0.6rem' } }}
                 >
-                  {t.icon || <Box sx={{ width: 20, height: 20 }} />}
+                  {t.icon || <Box sx={{ width: 18, height: 18 }} />}
                 </Badge>
               ),
             })}
@@ -149,6 +154,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
         ))}
       </Tabs>
 
+      {/* Content */}
       <Box
         role="tabpanel"
         aria-labelledby={`tab-${tabs[activeIndex]?.id}`}
@@ -157,15 +163,12 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
           overflowY: 'auto',
           overflowX: 'hidden',
           p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          bgcolor: 'grey.50',
+          bgcolor: isDark ? '#151521' : '#F8F9FA',
         }}
       >
         {tabs[activeIndex]?.content}
       </Box>
-    </Paper>
+    </Box>
   );
 });
 

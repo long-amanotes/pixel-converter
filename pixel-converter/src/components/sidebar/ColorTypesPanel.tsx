@@ -1,22 +1,16 @@
 /**
- * Color types panel component for managing color type classifications
- * 
- * Requirements:
- * - 7.1: Parse color types from existing color groups
- * - 7.2: Display color types with pixel counts and validation status
- * - 7.3: Show validation status
+ * Color types panel - Metronic 9 inspired design
  */
 
-import { Box, Typography, Paper, Button, Stack } from '@mui/material';
+import { Box, Typography, Button, Stack, alpha, useTheme } from '@mui/material';
 import { AutoFixHigh as ParseIcon } from '@mui/icons-material';
 import { useStore } from '../../store';
 import { useMemo } from 'react';
 
-/**
- * Color types panel component
- * Displays color types with statistics and allows parsing from color groups
- */
 export const ColorTypesPanel = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  
   const colorTypes = useStore((state) => state.colorTypes);
   const activeColorTypeId = useStore((state) => state.activeColorTypeId);
   const setActiveColorType = useStore((state) => state.setActiveColorType);
@@ -24,19 +18,15 @@ export const ColorTypesPanel = () => {
   const clearSelection = useStore((state) => state.clearSelection);
   const pixels = useStore((state) => state.pixels);
 
-  // Calculate pixel counts for each color type
   const colorTypeStats = useMemo(() => {
     const stats = new Map<number, number>();
-    
     for (const pixel of pixels) {
       const count = stats.get(pixel.colorType) || 0;
       stats.set(pixel.colorType, count + 1);
     }
-    
     return stats;
   }, [pixels]);
 
-  // Calculate total assigned pixels and validation status
   const totalPixels = pixels.length;
   const assignedPixels = useMemo(() => {
     let sum = 0;
@@ -49,10 +39,7 @@ export const ColorTypesPanel = () => {
   const isValid = totalPixels === 0 || assignedPixels === totalPixels;
 
   const handleColorTypeClick = (id: number) => {
-    // Clear selection on canvas when switching/toggling types
     clearSelection();
-    
-    // Toggle selection: if already active, deselect (set to 0)
     if (activeColorTypeId === id) {
       setActiveColorType(0);
     } else {
@@ -60,93 +47,111 @@ export const ColorTypesPanel = () => {
     }
   };
 
-  const handleParse = () => {
-    parseColorTypes();
-  };
-
   return (
-    <Paper 
-      elevation={0} 
+    <Box
       sx={{ 
-        p: 2.5, 
-        bgcolor: 'background.paper', 
-        borderRadius: '12px',
+        p: 2, 
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF', 
+        borderRadius: '10px',
         border: '1px solid',
         borderColor: 'divider',
       }}
     >
-      <Typography 
-        variant="h6" 
-        gutterBottom
-        sx={{
-          fontSize: '0.8125rem',
-          fontWeight: 600,
-          color: 'text.primary',
-          mb: 2,
-        }}
-      >
-        Color Types
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography 
+          variant="subtitle2"
+          sx={{
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            color: 'text.primary',
+          }}
+        >
+          Color Types
+        </Typography>
+        <Typography 
+          variant="caption"
+          sx={{
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+            color: 'text.secondary',
+            bgcolor: isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04),
+            px: 1,
+            py: 0.25,
+            borderRadius: '4px',
+          }}
+        >
+          {colorTypes.length}
+        </Typography>
+      </Box>
 
       <Button
         variant="contained"
-        startIcon={<ParseIcon />}
-        onClick={handleParse}
+        startIcon={<ParseIcon sx={{ fontSize: 16 }} />}
+        onClick={parseColorTypes}
         fullWidth
         size="small"
         sx={{ 
           mb: 2,
-          borderRadius: '10px',
+          borderRadius: '8px',
           py: 1,
           fontWeight: 600,
           fontSize: '0.8125rem',
           textTransform: 'none',
           boxShadow: 'none',
-          bgcolor: 'primary.main',
+          background: 'linear-gradient(135deg, #7239EA 0%, #5014D0 100%)',
           '&:hover': {
-            bgcolor: 'primary.dark',
-            boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
+            background: 'linear-gradient(135deg, #5014D0 0%, #4010B0 100%)',
+            boxShadow: '0 4px 12px rgba(114, 57, 234, 0.35)',
           },
           transition: 'all 0.15s ease',
         }}
       >
-        Parse from Color Groups
+        Parse from Groups
       </Button>
 
-      {/* Validation Status */}
       {totalPixels > 0 && colorTypes.length > 0 && (
         <Box
           sx={{
             mb: 2,
             p: 1.5,
-            borderRadius: '10px',
-            bgcolor: isValid ? 'success.light' : 'error.light',
-            color: isValid ? 'success.dark' : 'error.dark',
-            fontSize: '0.8125rem',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
+            borderRadius: '8px',
+            bgcolor: isValid 
+              ? (isDark ? alpha('#50CD89', 0.15) : alpha('#50CD89', 0.1))
+              : (isDark ? alpha('#F1416C', 0.15) : alpha('#F1416C', 0.1)),
+            border: '1px solid',
+            borderColor: isValid ? alpha('#50CD89', 0.3) : alpha('#F1416C', 0.3),
           }}
         >
-          {isValid ? '✓ Type sum matches total' : `⚠ Mismatch ${assignedPixels} ≠ ${totalPixels}`}
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: isValid ? '#50CD89' : '#F1416C',
+            }}
+          >
+            {isValid ? '✓ Type sum matches total' : `⚠ Mismatch: ${assignedPixels} ≠ ${totalPixels}`}
+          </Typography>
         </Box>
       )}
 
       {colorTypes.length === 0 ? (
-        <Typography 
-          variant="body2" 
-          color="text.secondary"
-          sx={{ 
-            fontSize: '13px',
-            opacity: 0.6,
-            mt: 1,
+        <Box
+          sx={{
+            p: 3,
+            textAlign: 'center',
+            borderRadius: '8px',
+            bgcolor: isDark ? alpha('#FFFFFF', 0.02) : alpha('#000000', 0.02),
+            border: '1px dashed',
+            borderColor: isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08),
           }}
         >
-          No color types defined. Click "Parse from Group Color" to create them.
-        </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8125rem' }}>
+            Click "Parse from Groups" to create types
+          </Typography>
+        </Box>
       ) : (
-        <Stack spacing={0.5}>
+        <Stack spacing={0.75}>
           {colorTypes.map((colorType) => {
             const isActive = activeColorTypeId === colorType.id;
             const pixelCount = colorTypeStats.get(colorType.id) || 0;
@@ -160,41 +165,56 @@ export const ColorTypesPanel = () => {
                   alignItems: 'center',
                   gap: 1.5,
                   p: 1.5,
-                  borderRadius: '10px',
+                  borderRadius: '8px',
                   cursor: 'pointer',
-                  bgcolor: isActive ? 'primary.light' : 'grey.50',
+                  bgcolor: isActive 
+                    ? (isDark ? alpha('#7239EA', 0.15) : alpha('#7239EA', 0.1))
+                    : (isDark ? alpha('#FFFFFF', 0.03) : alpha('#000000', 0.02)),
                   border: '1px solid',
-                  borderColor: isActive ? 'primary.main' : 'grey.200',
+                  borderColor: isActive 
+                    ? '#7239EA' 
+                    : (isDark ? alpha('#FFFFFF', 0.06) : alpha('#000000', 0.04)),
                   transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: isActive ? 'primary.light' : 'grey.100',
-                    borderColor: isActive ? 'primary.main' : 'grey.300',
+                    bgcolor: isActive 
+                      ? (isDark ? alpha('#7239EA', 0.2) : alpha('#7239EA', 0.15))
+                      : (isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04)),
                   },
                 }}
               >
                 <Box
                   sx={{
-                    width: 24,
-                    height: 24,
+                    width: 28,
+                    height: 28,
                     bgcolor: colorType.color,
-                    border: '2px solid',
-                    borderColor: 'background.paper',
                     borderRadius: '6px',
                     flexShrink: 0,
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                    border: '2px solid',
+                    borderColor: isDark ? alpha('#FFFFFF', 0.1) : alpha('#FFFFFF', 0.8),
                   }}
                 />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    flex: 1,
-                    fontSize: '0.8125rem',
-                    fontWeight: isActive ? 600 : 500,
-                    color: isActive ? 'primary.dark' : 'text.primary',
-                  }}
-                >
-                  Type {colorType.id}: {pixelCount}px
-                </Typography>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontSize: '0.8125rem',
+                      fontWeight: isActive ? 600 : 500,
+                      color: isActive ? '#7239EA' : 'text.primary',
+                    }}
+                  >
+                    Type {colorType.id}
+                  </Typography>
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      fontSize: '0.6875rem',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    {pixelCount} pixels
+                  </Typography>
+                </Box>
               </Box>
             );
           })}
@@ -202,19 +222,28 @@ export const ColorTypesPanel = () => {
       )}
 
       {activeColorTypeId > 0 && (
-        <Typography 
-          variant="caption" 
-          color="primary" 
-          sx={{ 
-            mt: 1, 
-            display: 'block',
-            fontSize: '11px',
-            fontStyle: 'italic',
+        <Box
+          sx={{
+            mt: 2,
+            p: 1.5,
+            borderRadius: '8px',
+            bgcolor: isDark ? alpha('#7239EA', 0.1) : alpha('#7239EA', 0.08),
+            border: '1px solid',
+            borderColor: alpha('#7239EA', 0.2),
           }}
         >
-          Active: {colorTypes.find((ct) => ct.id === activeColorTypeId)?.name}
-        </Typography>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              color: '#7239EA',
+            }}
+          >
+            ✓ Active: {colorTypes.find((ct) => ct.id === activeColorTypeId)?.name}
+          </Typography>
+        </Box>
       )}
-    </Paper>
+    </Box>
   );
 };

@@ -1,16 +1,8 @@
 /**
- * Data groups panel component for managing data groups
- * 
- * Requirements:
- * - 6.1: Initialize with default "None" data group (id: 0)
- * - 6.2: Add new group with auto-incremented ID
- * - 6.3: Delete active group and reassign pixels to "None"
- * - 6.4: Clear active group (reassign pixels to "None")
- * - 6.5: Update group name
- * - 6.6: Group selection
+ * Data groups panel - Metronic 9 inspired design
  */
 
-import { Box, Typography, Paper, Button, Stack, TextField } from '@mui/material';
+import { Box, Typography, Button, Stack, TextField, alpha, useTheme } from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -20,12 +12,11 @@ import { useStore } from '../../store';
 import { useToast } from '../../contexts/toast';
 import { useState, useMemo } from 'react';
 
-/**
- * Data groups panel component
- * Displays data groups with controls for add/delete/clear and editable names
- */
 export const DataGroupsPanel = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { notify } = useToast();
+  
   const dataGroups = useStore((state) => state.dataGroups);
   const activeDataGroupId = useStore((state) => state.activeDataGroupId);
   const addDataGroup = useStore((state) => state.addDataGroup);
@@ -40,73 +31,50 @@ export const DataGroupsPanel = () => {
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState('');
 
-  // Calculate pixel counts for each data group
   const groupPixelCounts = useMemo(() => {
     const counts = new Map<number, number>();
-    
     for (const pixel of pixels) {
       const count = counts.get(pixel.group) || 0;
       counts.set(pixel.group, count + 1);
     }
-    
     return counts;
   }, [pixels]);
 
   const handleAddGroup = () => {
     addDataGroup();
-    notify({
-      message: 'Data group added',
-      severity: 'success',
-    });
+    notify({ message: 'Data group added', severity: 'success' });
   };
 
   const handleDeleteGroup = () => {
     if (activeDataGroupId === 0) {
-      notify({
-        message: 'Cannot delete the "None" group',
-        severity: 'warning',
-      });
+      notify({ message: 'Cannot delete "None" group', severity: 'warning' });
       return;
     }
     deleteDataGroup();
-    notify({
-      message: 'Data group deleted',
-      severity: 'success',
-    });
+    notify({ message: 'Data group deleted', severity: 'success' });
   };
 
   const handleClearGroup = () => {
     if (activeDataGroupId === 0) {
-      notify({
-        message: 'Cannot clear the "None" group',
-        severity: 'warning',
-      });
+      notify({ message: 'Cannot clear "None" group', severity: 'warning' });
       return;
     }
     clearDataGroup();
-    notify({
-      message: 'Data group cleared',
-      severity: 'success',
-    });
+    notify({ message: 'Data group cleared', severity: 'success' });
   };
 
   const handleGroupClick = (id: number) => {
-    // Clear selection on canvas when switching/toggling groups
     clearSelection();
-    
-    // Toggle: if clicking the same group, deselect it (set to -1 or 0)
     if (activeDataGroupId === id) {
-      setActiveDataGroup(0); // Deselect by setting to "None" group
+      setActiveDataGroup(0);
       return;
     }
-    
     setActiveDataGroup(id);
-    // Automatically switch to "Group Data" edit mode (Requirement 6.6)
     setEditMode('group');
   };
 
   const handleStartEdit = (id: number, currentName: string) => {
-    if (id === 0) return; // Cannot edit "None" group name
+    if (id === 0) return;
     setEditingGroupId(id);
     setEditingName(currentName);
   };
@@ -124,102 +92,124 @@ export const DataGroupsPanel = () => {
     setEditingName('');
   };
 
+  const buttonStyles = {
+    borderRadius: '6px',
+    py: 0.75,
+    fontWeight: 600,
+    fontSize: '0.6875rem',
+    textTransform: 'none' as const,
+    transition: 'all 0.15s ease',
+  };
+
   return (
-    <Paper 
-      elevation={0} 
+    <Box
       sx={{ 
-        p: 2.5, 
-        bgcolor: 'background.paper', 
-        borderRadius: '12px',
+        p: 2, 
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF', 
+        borderRadius: '10px',
         border: '1px solid',
         borderColor: 'divider',
       }}
     >
-      <Typography 
-        variant="h6" 
-        gutterBottom
-        sx={{
-          fontSize: '0.8125rem',
-          fontWeight: 600,
-          color: 'text.primary',
-          mb: 2,
-        }}
-      >
-        Data Groups
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography 
+          variant="subtitle2"
+          sx={{
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            color: 'text.primary',
+          }}
+        >
+          Data Groups
+        </Typography>
+        <Typography 
+          variant="caption"
+          sx={{
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+            color: 'text.secondary',
+            bgcolor: isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04),
+            px: 1,
+            py: 0.25,
+            borderRadius: '4px',
+          }}
+        >
+          {dataGroups.length}
+        </Typography>
+      </Box>
 
-      {/* Action Buttons */}
       <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<AddIcon sx={{ fontSize: 14 }} />}
           onClick={handleAddGroup}
           size="small"
           fullWidth
           sx={{
-            borderRadius: '10px',
-            py: 0.75,
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            textTransform: 'none',
+            ...buttonStyles,
             boxShadow: 'none',
-            bgcolor: 'primary.main',
+            background: 'linear-gradient(135deg, #50CD89 0%, #3DBF77 100%)',
             '&:hover': {
-              bgcolor: 'primary.dark',
+              background: 'linear-gradient(135deg, #3DBF77 0%, #2DAF67 100%)',
+              boxShadow: '0 4px 12px rgba(80, 205, 137, 0.35)',
             },
-            transition: 'all 0.15s ease',
           }}
         >
           Add
         </Button>
         <Button
           variant="outlined"
-          startIcon={<DeleteIcon />}
+          startIcon={<DeleteIcon sx={{ fontSize: 14 }} />}
           onClick={handleDeleteGroup}
           size="small"
           fullWidth
           disabled={activeDataGroupId === 0}
           sx={{
-            borderRadius: '10px',
-            py: 0.75,
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            textTransform: 'none',
+            ...buttonStyles,
             borderWidth: 1.5,
+            borderColor: isDark ? alpha('#FFFFFF', 0.15) : alpha('#000000', 0.12),
+            color: 'text.secondary',
             '&:hover': {
               borderWidth: 1.5,
+              borderColor: 'error.main',
+              color: 'error.main',
+              bgcolor: alpha('#F1416C', 0.08),
             },
-            transition: 'all 0.15s ease',
+            '&:disabled': {
+              borderColor: isDark ? alpha('#FFFFFF', 0.08) : alpha('#000000', 0.06),
+            },
           }}
         >
           Delete
         </Button>
         <Button
           variant="outlined"
-          startIcon={<ClearIcon />}
+          startIcon={<ClearIcon sx={{ fontSize: 14 }} />}
           onClick={handleClearGroup}
           size="small"
           fullWidth
           disabled={activeDataGroupId === 0}
           sx={{
-            borderRadius: '10px',
-            py: 0.75,
-            fontWeight: 600,
-            fontSize: '0.75rem',
-            textTransform: 'none',
+            ...buttonStyles,
             borderWidth: 1.5,
+            borderColor: isDark ? alpha('#FFFFFF', 0.15) : alpha('#000000', 0.12),
+            color: 'text.secondary',
             '&:hover': {
               borderWidth: 1.5,
+              borderColor: 'warning.main',
+              color: 'warning.main',
+              bgcolor: alpha('#FFC700', 0.08),
             },
-            transition: 'all 0.15s ease',
+            '&:disabled': {
+              borderColor: isDark ? alpha('#FFFFFF', 0.08) : alpha('#000000', 0.06),
+            },
           }}
         >
           Clear
         </Button>
       </Stack>
 
-      {/* Data Groups List */}
-      <Stack spacing={0.5}>
+      <Stack spacing={0.75}>
         {dataGroups.map((group) => {
           const isActive = activeDataGroupId === group.id;
           const pixelCount = groupPixelCounts.get(group.id) || 0;
@@ -233,14 +223,19 @@ export const DataGroupsPanel = () => {
                 alignItems: 'center',
                 gap: 1.5,
                 p: 1.5,
-                borderRadius: '10px',
-                bgcolor: isActive ? 'primary.light' : 'grey.50',
+                borderRadius: '8px',
+                bgcolor: isActive 
+                  ? (isDark ? alpha('#50CD89', 0.15) : alpha('#50CD89', 0.1))
+                  : (isDark ? alpha('#FFFFFF', 0.03) : alpha('#000000', 0.02)),
                 border: '1px solid',
-                borderColor: isActive ? 'primary.main' : 'grey.200',
+                borderColor: isActive 
+                  ? '#50CD89' 
+                  : (isDark ? alpha('#FFFFFF', 0.06) : alpha('#000000', 0.04)),
                 transition: 'all 0.15s ease',
                 '&:hover': {
-                  bgcolor: isActive ? 'primary.light' : 'grey.100',
-                  borderColor: isActive ? 'primary.main' : 'grey.300',
+                  bgcolor: isActive 
+                    ? (isDark ? alpha('#50CD89', 0.2) : alpha('#50CD89', 0.15))
+                    : (isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04)),
                 },
               }}
             >
@@ -258,11 +253,8 @@ export const DataGroupsPanel = () => {
                     onChange={(e) => setEditingName(e.target.value)}
                     onBlur={handleSaveEdit}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSaveEdit();
-                      } else if (e.key === 'Escape') {
-                        handleCancelEdit();
-                      }
+                      if (e.key === 'Enter') handleSaveEdit();
+                      else if (e.key === 'Escape') handleCancelEdit();
                     }}
                     size="small"
                     fullWidth
@@ -270,19 +262,19 @@ export const DataGroupsPanel = () => {
                     sx={{ 
                       '& .MuiInputBase-input': { 
                         py: 0.5,
-                        fontSize: '13px',
+                        fontSize: '0.8125rem',
                       } 
                     }}
                   />
                 ) : (
                   <Typography
                     variant="body2"
-                    fontWeight={isActive ? 600 : 500}
                     onDoubleClick={() => handleStartEdit(group.id, group.name)}
                     sx={{
                       cursor: group.id === 0 ? 'pointer' : 'text',
                       fontSize: '0.8125rem',
-                      color: isActive ? 'primary.dark' : 'text.primary',
+                      fontWeight: isActive ? 600 : 500,
+                      color: isActive ? '#50CD89' : 'text.primary',
                     }}
                   >
                     {group.name}
@@ -292,8 +284,10 @@ export const DataGroupsPanel = () => {
               <Typography
                 variant="caption"
                 sx={{
-                  bgcolor: isActive ? 'primary.main' : 'grey.200',
-                  color: isActive ? 'primary.contrastText' : 'text.secondary',
+                  bgcolor: isActive 
+                    ? '#50CD89' 
+                    : (isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.06)),
+                  color: isActive ? '#FFFFFF' : 'text.secondary',
                   px: 1.25,
                   py: 0.5,
                   borderRadius: '20px',
@@ -310,32 +304,18 @@ export const DataGroupsPanel = () => {
         })}
       </Stack>
 
-      {activeDataGroupId > 0 && (
-        <Typography 
-          variant="caption" 
-          color="primary" 
-          sx={{ 
-            mt: 1, 
-            display: 'block',
-            fontSize: '11px',
-            fontStyle: 'italic',
-          }}
-        >
-          Active: {dataGroups.find((g) => g.id === activeDataGroupId)?.name}
-        </Typography>
-      )}
-
       <Typography 
         variant="caption" 
         color="text.secondary" 
         sx={{ 
-          mt: 1, 
+          mt: 2, 
           display: 'block',
-          fontSize: '11px',
+          fontSize: '0.6875rem',
+          opacity: 0.7,
         }}
       >
-        Double-click a group name to edit (except "None")
+        Double-click to rename (except "None")
       </Typography>
-    </Paper>
+    </Box>
   );
 };

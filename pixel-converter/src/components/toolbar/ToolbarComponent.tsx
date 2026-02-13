@@ -1,11 +1,8 @@
 /**
- * ToolbarComponent - Main toolbar for the Pixel Converter application
- * Provides controls for size, scale mode, and edit mode selection
- * 
- * Validates: Requirements 2.1, 2.7, 2.8, 5.1, 5.2, 5.3, 5.4
+ * ToolbarComponent - Metronic 9 inspired toolbar
  */
 
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
   Box,
   TextField,
@@ -13,54 +10,51 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Paper,
   SelectChangeEvent,
   Button,
-  Divider,
   IconButton,
   Tooltip,
+  alpha,
+  useTheme,
+  Chip,
 } from '@mui/material';
 import { 
-  HelpOutline, 
   MenuOpen, 
   Undo, 
-  Upload as UploadIcon,
-  DarkModeOutlined,
-  LightModeOutlined,
+  CloudUpload as UploadIcon,
+  GridOn as GridIcon,
+  Brush as BrushIcon,
+  AutoFixHigh as MagicIcon,
 } from '@mui/icons-material';
 import { useStore } from '../../store';
-import { ColorModeContext } from '../../contexts/color-mode';
 import type { EditMode, ScaleMode } from '../../types';
 import { ZoomControls } from './ZoomControls';
 import { PaintModeControls } from './PaintModeControls';
 import { EraseModeControls } from './EraseModeControls';
 
-/**
- * Minimum allowed pixel art size
- */
 const MIN_SIZE = 8;
-
-/**
- * Maximum allowed pixel art size
- */
 const MAX_SIZE = 256;
 
-/**
- * ToolbarComponent provides the main controls for the pixel art converter
- * including size input, scale mode selector, edit mode selector, and file upload
- */
 export type ToolbarComponentProps = {
   onFileInputChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onToggleSidebar?: () => void;
+  onToggleSidebar?: (() => void) | undefined;
   onOpenHelp?: () => void;
+};
+
+const editModeConfig: Record<EditMode, { label: string; color: string; icon: React.ReactNode }> = {
+  group: { label: 'Group', color: '#50CD89', icon: <GridIcon sx={{ fontSize: 16 }} /> },
+  colorType: { label: 'Type', color: '#7239EA', icon: <MagicIcon sx={{ fontSize: 16 }} /> },
+  paint: { label: 'Paint', color: '#3E97FF', icon: <BrushIcon sx={{ fontSize: 16 }} /> },
+  erase: { label: 'Erase', color: '#F1416C', icon: null },
 };
 
 export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
   onFileInputChange,
   onToggleSidebar,
-  onOpenHelp,
 }) => {
-  const { mode, setMode } = useContext(ColorModeContext);
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  
   const size = useStore((state) => state.size);
   const scaleMode = useStore((state) => state.scaleMode);
   const editMode = useStore((state) => state.editMode);
@@ -70,23 +64,15 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
   const undo = useStore((state) => state.undo);
   const undoStackSize = useStore((state) => state.undoStack.length);
 
-  // File input ref for programmatic triggering
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Track if size input is invalid for visual feedback
   const [sizeInputValue, setSizeInputValue] = React.useState(size.toString());
   const [sizeError, setSizeError] = React.useState(false);
 
-  // Update local input value when store size changes
   React.useEffect(() => {
     setSizeInputValue(size.toString());
     setSizeError(false);
   }, [size]);
 
-  /**
-   * Handle size input change
-   * Validates and clamps the size to the valid range [8-256]
-   */
   const handleSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
     setSizeInputValue(inputValue);
@@ -107,71 +93,92 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
     setSize(value);
   };
 
-  /**
-   * Handle scale mode selection change
-   */
   const handleScaleModeChange = (event: SelectChangeEvent<ScaleMode>) => {
     setScaleMode(event.target.value as ScaleMode);
   };
 
-  /**
-   * Handle edit mode selection change
-   */
   const handleEditModeChange = (event: SelectChangeEvent<EditMode>) => {
     setEditMode(event.target.value as EditMode);
   };
 
-  /**
-   * Handle file upload button click
-   * Opens the file input dialog
-   */
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
+  const currentModeConfig = editModeConfig[editMode];
+
+  const inputStyles = {
+    '& .MuiInputLabel-root': {
+      fontWeight: 500,
+      fontSize: '0.75rem',
+      color: 'text.secondary',
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '8px',
+      bgcolor: isDark ? alpha('#FFFFFF', 0.03) : alpha('#000000', 0.02),
+      transition: 'all 0.15s ease',
+      '& fieldset': {
+        borderWidth: 1,
+        borderColor: isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08),
+      },
+      '&:hover': {
+        bgcolor: isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04),
+        '& fieldset': {
+          borderColor: isDark ? alpha('#FFFFFF', 0.15) : alpha('#000000', 0.12),
+        },
+      },
+      '&.Mui-focused': {
+        bgcolor: isDark ? alpha('#FFFFFF', 0.05) : '#FFFFFF',
+        '& fieldset': {
+          borderWidth: 1.5,
+          borderColor: 'primary.main',
+        },
+      },
+    },
+    '& .MuiOutlinedInput-input, & .MuiSelect-select': {
+      fontWeight: 500,
+      fontSize: '0.8125rem',
+    },
+  };
+
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        px: 3,
-        py: 2,
-        bgcolor: 'background.paper',
+        px: 2,
+        py: 1.5,
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF',
         borderBottom: '1px solid',
         borderColor: 'divider',
-        borderRadius: 0,
         display: 'flex',
-        gap: 2,
+        gap: 1.5,
         flexWrap: 'wrap',
         alignItems: 'center',
-        position: 'relative',
-        boxShadow: (theme) => theme.palette.mode === 'dark' 
-          ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
-          : '0 4px 20px rgba(0, 0, 0, 0.05)',
       }}
     >
       {onToggleSidebar && (
         <Tooltip title="Toggle sidebar" arrow>
           <IconButton 
-            size="medium" 
-            aria-label="Toggle sidebar" 
+            size="small" 
             onClick={onToggleSidebar}
             sx={{
-              borderRadius: '10px',
-              bgcolor: 'grey.100',
-              color: 'grey.700',
+              width: 36,
+              height: 36,
+              borderRadius: '8px',
+              bgcolor: isDark ? alpha('#FFFFFF', 0.05) : 'grey.100',
+              color: 'text.secondary',
               transition: 'all 0.15s ease',
               '&:hover': {
-                bgcolor: 'grey.200',
-                color: 'grey.900',
+                bgcolor: isDark ? alpha('#FFFFFF', 0.1) : 'grey.200',
+                color: 'text.primary',
               },
             }}
           >
-            <MenuOpen fontSize="small" />
+            <MenuOpen sx={{ fontSize: 18 }} />
           </IconButton>
         </Tooltip>
       )}
 
-      {/* File Upload Control */}
+      {/* Upload Button */}
       <Box>
         <input
           ref={fileInputRef}
@@ -179,25 +186,24 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           accept="image/*"
           onChange={onFileInputChange ?? (() => {})}
           style={{ display: 'none' }}
-          aria-label="Upload image file"
         />
         <Button
           variant="contained"
-          startIcon={<UploadIcon />}
+          startIcon={<UploadIcon sx={{ fontSize: 18 }} />}
           onClick={handleUploadClick}
-          size="medium"
+          size="small"
           sx={{
-            borderRadius: '10px',
-            px: 3,
-            py: 1.25,
+            height: 36,
+            borderRadius: '8px',
+            px: 2.5,
             fontWeight: 600,
-            fontSize: '0.875rem',
+            fontSize: '0.8125rem',
             textTransform: 'none',
             boxShadow: 'none',
-            bgcolor: 'primary.main',
+            background: 'linear-gradient(135deg, #3E97FF 0%, #2884EF 100%)',
             '&:hover': {
-              bgcolor: 'primary.dark',
-              boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
+              background: 'linear-gradient(135deg, #2884EF 0%, #1B6FD9 100%)',
+              boxShadow: '0 4px 12px rgba(62, 151, 255, 0.4)',
               transform: 'translateY(-1px)',
             },
             '&:active': {
@@ -206,37 +212,39 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
             transition: 'all 0.15s ease',
           }}
         >
-          Upload Image
+          Upload
         </Button>
       </Box>
 
-      <Tooltip title={undoStackSize === 0 ? 'Nothing to undo' : 'Undo (Ctrl+Z)'} arrow>
+      {/* Undo */}
+      <Tooltip title={undoStackSize === 0 ? 'Nothing to undo' : `Undo (${undoStackSize})`} arrow>
         <span>
           <IconButton
-            size="medium"
-            aria-label="Undo"
+            size="small"
             onClick={() => undo()}
             disabled={undoStackSize === 0}
             sx={{
-              borderRadius: '10px',
-              bgcolor: undoStackSize > 0 ? 'grey.100' : 'transparent',
-              color: 'grey.700',
+              width: 36,
+              height: 36,
+              borderRadius: '8px',
+              bgcolor: undoStackSize > 0 
+                ? (isDark ? alpha('#FFFFFF', 0.05) : 'grey.100')
+                : 'transparent',
+              color: undoStackSize > 0 ? 'text.secondary' : 'text.disabled',
               transition: 'all 0.15s ease',
               '&:hover:not(:disabled)': {
-                bgcolor: 'grey.200',
-                color: 'grey.900',
-              },
-              '&:disabled': {
-                opacity: 0.4,
+                bgcolor: isDark ? alpha('#FFFFFF', 0.1) : 'grey.200',
+                color: 'text.primary',
               },
             }}
           >
-            <Undo fontSize="small" />
+            <Undo sx={{ fontSize: 18 }} />
           </IconButton>
         </span>
       </Tooltip>
 
-      <Divider orientation="vertical" flexItem sx={{ mx: 1, borderColor: 'divider', opacity: 0.6 }} />
+      {/* Divider */}
+      <Box sx={{ width: 1, height: 24, bgcolor: 'divider', mx: 0.5 }} />
 
       {/* Size Input */}
       <TextField
@@ -245,121 +253,26 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
         value={sizeInputValue}
         onChange={handleSizeChange}
         error={sizeError}
-        inputProps={{
-          step: 1,
-          'aria-label': 'Pixel art size',
-        }}
-        sx={{ 
-          width: 120,
-          '& .MuiInputLabel-root': {
-            fontWeight: 500,
-            fontSize: '0.8125rem',
-            color: 'grey.600',
-          },
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            bgcolor: 'grey.50',
-            transition: 'all 0.15s ease',
-            '& fieldset': {
-              borderWidth: 1,
-              borderColor: 'grey.200',
-            },
-            '&:hover': {
-              bgcolor: 'grey.100',
-              '& fieldset': {
-                borderColor: 'grey.300',
-              },
-            },
-            '&.Mui-focused': {
-              bgcolor: 'background.paper',
-              '& fieldset': {
-                borderWidth: 1.5,
-                borderColor: 'primary.main',
-              },
-            },
-          },
-          '& .MuiOutlinedInput-input': {
-            fontWeight: 500,
-            fontSize: '0.875rem',
-          },
-        }}
+        inputProps={{ step: 1, min: MIN_SIZE, max: MAX_SIZE }}
+        sx={{ width: 90, ...inputStyles }}
         size="small"
       />
 
-      {/* Scale Mode Selector */}
-      <FormControl 
-        size="small" 
-        sx={{ 
-          minWidth: 170,
-          '& .MuiInputLabel-root': {
-            fontWeight: 500,
-            fontSize: '0.8125rem',
-            color: 'grey.600',
-          },
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            bgcolor: 'grey.50',
-            transition: 'all 0.15s ease',
-            '& fieldset': {
-              borderWidth: 1,
-              borderColor: 'grey.200',
-            },
-            '&:hover': {
-              bgcolor: 'grey.100',
-              '& fieldset': {
-                borderColor: 'grey.300',
-              },
-            },
-            '&.Mui-focused': {
-              bgcolor: 'background.paper',
-              '& fieldset': {
-                borderWidth: 1.5,
-                borderColor: 'primary.main',
-              },
-            },
-          },
-          '& .MuiSelect-select': {
-            fontWeight: 500,
-            fontSize: '0.8125rem',
-          },
-        }}
-      >
-        <InputLabel id="scale-mode-label">Scale Mode</InputLabel>
+      {/* Scale Mode */}
+      <FormControl size="small" sx={{ minWidth: 140, ...inputStyles }}>
+        <InputLabel>Scale</InputLabel>
         <Select
-          labelId="scale-mode-label"
-          id="scale-mode-select"
           value={scaleMode}
-          label="Scale Mode"
+          label="Scale"
           onChange={handleScaleModeChange}
           MenuProps={{
             PaperProps: {
               sx: {
-                borderRadius: '12px',
-                mt: 1,
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
+                borderRadius: '10px',
+                mt: 0.5,
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
                 border: '1px solid',
                 borderColor: 'divider',
-                '& .MuiMenuItem-root': {
-                  borderRadius: '8px',
-                  mx: 1,
-                  my: 0.25,
-                  fontWeight: 500,
-                  fontSize: '0.8125rem',
-                  transition: 'all 0.15s ease',
-                  '&:hover': {
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
-                  },
-                  '&.Mui-selected': {
-                    bgcolor: 'primary.light',
-                    color: 'primary.dark',
-                    fontWeight: 600,
-                    '&:hover': {
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText',
-                    },
-                  },
-                },
               },
             },
           }}
@@ -369,145 +282,56 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
         </Select>
       </FormControl>
 
-      {/* Edit Mode Selector */}
-      <FormControl 
-        size="small" 
-        sx={{ 
-          minWidth: 160,
-          '& .MuiInputLabel-root': {
-            fontWeight: 500,
-            fontSize: '0.8125rem',
-            color: 'grey.600',
-          },
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            bgcolor: 'grey.50',
-            transition: 'all 0.15s ease',
-            '& fieldset': {
-              borderWidth: 1,
-              borderColor: 'grey.200',
-            },
-            '&:hover': {
-              bgcolor: 'grey.100',
-              '& fieldset': {
-                borderColor: 'grey.300',
-              },
-            },
-            '&.Mui-focused': {
-              bgcolor: 'background.paper',
-              '& fieldset': {
-                borderWidth: 1.5,
-                borderColor: 'primary.main',
-              },
-            },
-          },
-          '& .MuiSelect-select': {
-            fontWeight: 500,
-            fontSize: '0.8125rem',
-          },
-        }}
-      >
-        <InputLabel id="edit-mode-label">Edit Mode</InputLabel>
-        <Select
-          labelId="edit-mode-label"
-          id="edit-mode-select"
-          value={editMode}
-          label="Edit Mode"
-          onChange={handleEditModeChange}
-          MenuProps={{
-            PaperProps: {
-              sx: {
-                borderRadius: '12px',
-                mt: 1,
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
-                border: '1px solid',
-                borderColor: 'divider',
-                '& .MuiMenuItem-root': {
-                  borderRadius: '8px',
-                  mx: 1,
-                  my: 0.25,
-                  fontWeight: 500,
-                  fontSize: '0.8125rem',
-                  transition: 'all 0.15s ease',
-                  '&:hover': {
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
-                  },
-                  '&.Mui-selected': {
-                    bgcolor: 'primary.light',
-                    color: 'primary.dark',
-                    fontWeight: 600,
-                    '&:hover': {
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText',
-                    },
-                  },
+      {/* Edit Mode with visual indicator */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <FormControl size="small" sx={{ minWidth: 130, ...inputStyles }}>
+          <InputLabel>Mode</InputLabel>
+          <Select
+            value={editMode}
+            label="Mode"
+            onChange={handleEditModeChange}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  borderRadius: '10px',
+                  mt: 0.5,
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+                  border: '1px solid',
+                  borderColor: 'divider',
                 },
               },
+            }}
+          >
+            <MenuItem value="group">Group Data</MenuItem>
+            <MenuItem value="colorType">Color Type</MenuItem>
+            <MenuItem value="paint">Paint</MenuItem>
+            <MenuItem value="erase">Erase</MenuItem>
+          </Select>
+        </FormControl>
+        <Chip
+          icon={currentModeConfig.icon as React.ReactElement}
+          label={currentModeConfig.label}
+          size="small"
+          sx={{
+            height: 28,
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            bgcolor: alpha(currentModeConfig.color, isDark ? 0.2 : 0.12),
+            color: currentModeConfig.color,
+            border: `1px solid ${alpha(currentModeConfig.color, 0.3)}`,
+            '& .MuiChip-icon': {
+              color: 'inherit',
             },
           }}
-        >
-          <MenuItem value="group">Group Data</MenuItem>
-          <MenuItem value="colorType">Color Type</MenuItem>
-          <MenuItem value="paint">Paint</MenuItem>
-          <MenuItem value="erase">Erase</MenuItem>
-        </Select>
-      </FormControl>
+        />
+      </Box>
 
       {/* Zoom Controls */}
       <ZoomControls />
 
-      {/* Edit Mode Specific Controls */}
+      {/* Mode-specific controls */}
       {editMode === 'paint' && <PaintModeControls />}
       {editMode === 'erase' && <EraseModeControls />}
-
-      <Box sx={{ flex: 1 }} />
-
-      <Tooltip title={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`} arrow>
-        <IconButton
-          size="medium"
-          aria-label={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
-          onClick={setMode}
-          sx={{
-            borderRadius: '10px',
-            bgcolor: 'grey.100',
-            color: 'grey.700',
-            transition: 'all 0.15s ease',
-            '&:hover': {
-              bgcolor: 'grey.200',
-              color: 'grey.900',
-            },
-          }}
-        >
-          {mode === 'dark' ? (
-            <LightModeOutlined fontSize="small" />
-          ) : (
-            <DarkModeOutlined fontSize="small" />
-          )}
-        </IconButton>
-      </Tooltip>
-
-      {onOpenHelp && (
-        <Tooltip title="Help & shortcuts" arrow>
-          <IconButton 
-            size="medium" 
-            aria-label="Help" 
-            onClick={onOpenHelp}
-            sx={{
-              borderRadius: '10px',
-              bgcolor: 'grey.100',
-              color: 'grey.700',
-              transition: 'all 0.15s ease',
-              '&:hover': {
-                bgcolor: 'grey.200',
-                color: 'grey.900',
-              },
-            }}
-          >
-            <HelpOutline fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Paper>
+    </Box>
   );
 };

@@ -1,13 +1,8 @@
 /**
- * Export/Import panel component for saving and loading pixel art
- * 
- * Requirements:
- * - 9.1: Export JSON with palette, dimensions, and pixel data
- * - 9.3: Export PNG at native resolution
- * - 10.1: Import JSON with file input
+ * Export/Import panel - Metronic 9 inspired design
  */
 
-import { Box, Typography, Paper, Button, Stack, TextField } from '@mui/material';
+import { Box, Typography, Button, Stack, TextField, alpha, useTheme } from '@mui/material';
 import {
   Download as DownloadIcon,
   Image as ImageIcon,
@@ -21,12 +16,11 @@ import { clearStorage, hasStoredData } from '../../utils/storageUtils';
 import { useToast } from '../../contexts/toast';
 import { useState, useRef } from 'react';
 
-/**
- * Export/Import panel component
- * Provides controls for exporting to JSON/PNG and importing from JSON
- */
 export const ExportImportPanel = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { notify } = useToast();
+  
   const pixels = useStore((state) => state.pixels);
   const palette = useStore((state) => state.palette);
   const size = useStore((state) => state.size);
@@ -42,41 +36,22 @@ export const ExportImportPanel = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportJSON = () => {
-    // Generate JSON data
     const data = exportJSON(pixels, palette, size);
-    
-    // Display in textarea
     setJsonOutput(JSON.stringify(data, null, 2));
-    
-    // Download file
     downloadJSON(data);
-    
-    notify({
-      message: 'JSON exported successfully',
-      severity: 'success',
-    });
+    notify({ message: 'JSON exported successfully', severity: 'success' });
   };
 
   const handleExportPNG = () => {
     if (pixels.length === 0) {
-      notify({
-        message: 'No pixels to export. Load an image first.',
-        severity: 'error',
-      });
+      notify({ message: 'No pixels to export. Load an image first.', severity: 'error' });
       return;
     }
-
     try {
       exportPNG(pixels, size);
-      notify({
-        message: 'PNG exported successfully',
-        severity: 'success',
-      });
+      notify({ message: 'PNG exported successfully', severity: 'success' });
     } catch (error) {
-      notify({
-        message: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        severity: 'error',
-      });
+      notify({ message: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`, severity: 'error' });
     }
   };
 
@@ -89,91 +64,65 @@ export const ExportImportPanel = () => {
     if (!file) return;
 
     try {
-      // Read and parse JSON file
       const data = await readJSONFile(file);
-      
-      // Import and validate data
-      // Requirement 10.3: Display error message if JSON format is invalid
       const imported = importJSON(data);
       
-      // Update store with imported data
       setPixels(imported.pixels);
       setPalette(imported.palette);
       setSize(imported.size);
       setColorTypes(imported.colorTypes);
       
-      // Regroup pixels based on imported palette
-      // This will update colorGroups
-      setTimeout(() => {
-        regroup();
-      }, 0);
+      setTimeout(() => regroup(), 0);
       
-      // Display success message with summary
-      // Requirement 10.4: Display summary of imported data
       notify({
-        message: `Import successful! Loaded ${imported.pixels.length} pixels, ${imported.palette.length} colors, ${imported.dataGroups.length} data groups, ${imported.colorTypes.length} color types.`,
+        message: `Imported ${imported.pixels.length} pixels, ${imported.palette.length} colors`,
         severity: 'success',
         autoHideDurationMs: 5000,
       });
-      
-      // Clear JSON output
       setJsonOutput('');
     } catch (error) {
-      // Requirement 10.3: Display error message and reject import if JSON format is invalid
       if (error instanceof ImportValidationError) {
-        notify({
-          message: `Import failed: ${error.message}`,
-          severity: 'error',
-          autoHideDurationMs: 6000,
-        });
+        notify({ message: `Import failed: ${error.message}`, severity: 'error', autoHideDurationMs: 6000 });
       } else {
-        notify({
-          message: `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          severity: 'error',
-          autoHideDurationMs: 6000,
-        });
+        notify({ message: `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`, severity: 'error', autoHideDurationMs: 6000 });
       }
     }
-
-    // Reset file input
     event.target.value = '';
   };
 
   const handleClearStorage = () => {
-    if (!window.confirm('Are you sure you want to clear all saved data? This cannot be undone.')) {
-      return;
-    }
-
+    if (!window.confirm('Clear all saved data? This cannot be undone.')) return;
     try {
       clearStorage();
       setHasSavedData(false);
-      
-      notify({
-        message: 'Saved data cleared successfully',
-        severity: 'success',
-      });
+      notify({ message: 'Saved data cleared', severity: 'success' });
     } catch (error) {
-      notify({
-        message: `Failed to clear data: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        severity: 'error',
-      });
+      notify({ message: `Failed to clear: ${error instanceof Error ? error.message : 'Unknown error'}`, severity: 'error' });
     }
   };
 
+  const buttonStyles = {
+    borderRadius: '8px',
+    py: 1.25,
+    fontWeight: 600,
+    fontSize: '0.8125rem',
+    textTransform: 'none' as const,
+    boxShadow: 'none',
+    transition: 'all 0.15s ease',
+  };
+
   return (
-    <Paper 
-      elevation={0} 
+    <Box
       sx={{ 
-        p: 2.5, 
-        bgcolor: 'background.paper', 
-        borderRadius: '12px',
+        p: 2, 
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF', 
+        borderRadius: '10px',
         border: '1px solid',
         borderColor: 'divider',
       }}
     >
       <Typography 
-        variant="h6" 
-        gutterBottom
+        variant="subtitle2"
         sx={{
           fontSize: '0.8125rem',
           fontWeight: 600,
@@ -184,110 +133,94 @@ export const ExportImportPanel = () => {
         Export / Import
       </Typography>
 
-      {/* Export Buttons */}
-      <Stack spacing={1} sx={{ mb: 2 }}>
+      <Stack spacing={1.5} sx={{ mb: 2 }}>
         <Button
           variant="contained"
-          startIcon={<DownloadIcon />}
+          startIcon={<DownloadIcon sx={{ fontSize: 18 }} />}
           onClick={handleExportJSON}
           fullWidth
-          size="small"
           disabled={pixels.length === 0}
           sx={{
-            borderRadius: '10px',
-            py: 1,
-            fontWeight: 600,
-            fontSize: '0.8125rem',
-            textTransform: 'none',
-            boxShadow: 'none',
-            bgcolor: 'primary.main',
+            ...buttonStyles,
+            background: 'linear-gradient(135deg, #3E97FF 0%, #2884EF 100%)',
             '&:hover': {
-              bgcolor: 'primary.dark',
+              background: 'linear-gradient(135deg, #2884EF 0%, #1B6FD9 100%)',
               boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
             },
-            transition: 'all 0.15s ease',
+            '&:disabled': {
+              background: isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08),
+            },
           }}
         >
           Export JSON
         </Button>
         <Button
           variant="contained"
-          startIcon={<ImageIcon />}
+          startIcon={<ImageIcon sx={{ fontSize: 18 }} />}
           onClick={handleExportPNG}
           fullWidth
-          size="small"
           disabled={pixels.length === 0}
           sx={{
-            borderRadius: '10px',
-            py: 1,
-            fontWeight: 600,
-            fontSize: '0.8125rem',
-            textTransform: 'none',
-            boxShadow: 'none',
-            bgcolor: 'success.main',
+            ...buttonStyles,
+            background: 'linear-gradient(135deg, #50CD89 0%, #3DBF77 100%)',
             '&:hover': {
-              bgcolor: 'success.dark',
+              background: 'linear-gradient(135deg, #3DBF77 0%, #2DAF67 100%)',
               boxShadow: '0 4px 12px rgba(80, 205, 137, 0.35)',
             },
-            transition: 'all 0.15s ease',
+            '&:disabled': {
+              background: isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08),
+            },
           }}
         >
           Export PNG
         </Button>
       </Stack>
 
-      {/* Import Button */}
       <Button
         variant="outlined"
-        startIcon={<UploadIcon />}
+        startIcon={<UploadIcon sx={{ fontSize: 18 }} />}
         onClick={handleImportClick}
         fullWidth
-        size="small"
         sx={{ 
-          mb: 1,
-          borderRadius: '10px',
-          py: 1,
-          fontWeight: 600,
-          fontSize: '0.8125rem',
-          textTransform: 'none',
+          ...buttonStyles,
+          mb: 1.5,
           borderWidth: 1.5,
+          borderColor: isDark ? alpha('#FFFFFF', 0.15) : alpha('#000000', 0.12),
+          color: 'text.primary',
           '&:hover': {
             borderWidth: 1.5,
+            borderColor: 'primary.main',
+            bgcolor: isDark ? alpha('#3E97FF', 0.1) : alpha('#3E97FF', 0.06),
           },
-          transition: 'all 0.15s ease',
         }}
       >
         Import JSON
       </Button>
 
-      {/* Clear Storage Button */}
       {hasSavedData && (
         <Button
           variant="outlined"
           color="error"
-          startIcon={<DeleteForeverIcon />}
+          startIcon={<DeleteForeverIcon sx={{ fontSize: 18 }} />}
           onClick={handleClearStorage}
           fullWidth
-          size="small"
           sx={{ 
+            ...buttonStyles,
             mb: 2,
-            borderRadius: '10px',
-            py: 1,
-            fontWeight: 600,
-            fontSize: '0.8125rem',
-            textTransform: 'none',
             borderWidth: 1.5,
+            borderColor: alpha('#F1416C', 0.3),
+            color: 'error.main',
             '&:hover': {
               borderWidth: 1.5,
+              borderColor: 'error.main',
+              bgcolor: alpha('#F1416C', 0.1),
             },
-            transition: 'all 0.15s ease',
           }}
         >
           Clear Saved Data
         </Button>
       )}
 
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -296,34 +229,42 @@ export const ExportImportPanel = () => {
         style={{ display: 'none' }}
       />
 
-      {/* JSON Output Textarea */}
       {jsonOutput && (
         <Box>
-          <Typography variant="body2" gutterBottom sx={{ fontSize: '13px', fontWeight: 500 }}>
-            JSON Output:
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontSize: '0.75rem', 
+              fontWeight: 600, 
+              color: 'text.secondary',
+              mb: 1,
+              display: 'block',
+            }}
+          >
+            JSON Output
           </Typography>
           <TextField
             multiline
-            rows={10}
+            rows={8}
             value={jsonOutput}
             fullWidth
             size="small"
             InputProps={{
               readOnly: true,
               sx: {
-                fontFamily: '"Courier New", monospace',
-                fontSize: '12px',
-                bgcolor: '#fafafa',
+                fontFamily: 'monospace',
+                fontSize: '0.6875rem',
+                bgcolor: isDark ? alpha('#FFFFFF', 0.03) : alpha('#000000', 0.02),
               },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: '6px',
+                borderRadius: '8px',
               },
             }}
           />
         </Box>
       )}
-    </Paper>
+    </Box>
   );
 };

@@ -1,25 +1,19 @@
 /**
- * Color groups panel component for displaying and selecting color groups
- * 
- * Requirements:
- * - 4.5: Display color groups with pixel counts
- * - 4.6: Handle group selection for filtering
+ * Color groups panel - Metronic 9 inspired design
  */
 
-import { Box, Typography, Paper, Stack } from '@mui/material';
+import { Box, Typography, Stack, alpha, useTheme } from '@mui/material';
 import { useStore } from '../../store';
 
-/**
- * Color groups panel component
- * Displays color groups with pixel counts and allows selection for filtering
- */
 export const ColorGroupsPanel = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  
   const colorGroups = useStore((state) => state.colorGroups);
   const activeColorGroup = useStore((state) => state.activeColorGroup);
   const setActiveColorGroup = useStore((state) => state.setActiveColorGroup);
 
   const handleGroupClick = (index: number) => {
-    // Toggle selection: if already active, deselect (set to -1)
     if (activeColorGroup === index) {
       setActiveColorGroup(-1);
     } else {
@@ -28,35 +22,59 @@ export const ColorGroupsPanel = () => {
   };
 
   return (
-    <Paper 
-      elevation={0} 
+    <Box
       sx={{ 
-        p: 2.5, 
-        bgcolor: 'background.paper', 
-        borderRadius: '12px',
+        p: 2, 
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF', 
+        borderRadius: '10px',
         border: '1px solid',
         borderColor: 'divider',
       }}
     >
-      <Typography 
-        variant="h6" 
-        gutterBottom
-        sx={{
-          fontSize: '0.8125rem',
-          fontWeight: 600,
-          color: 'text.primary',
-          mb: 2,
-        }}
-      >
-        Color Groups
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography 
+          variant="subtitle2"
+          sx={{
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            color: 'text.primary',
+          }}
+        >
+          Color Groups
+        </Typography>
+        <Typography 
+          variant="caption"
+          sx={{
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+            color: 'text.secondary',
+            bgcolor: isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04),
+            px: 1,
+            py: 0.25,
+            borderRadius: '4px',
+          }}
+        >
+          {colorGroups.length}
+        </Typography>
+      </Box>
 
       {colorGroups.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '13px' }}>
-          No color groups available. Load an image to see color groups.
-        </Typography>
+        <Box
+          sx={{
+            p: 3,
+            textAlign: 'center',
+            borderRadius: '8px',
+            bgcolor: isDark ? alpha('#FFFFFF', 0.02) : alpha('#000000', 0.02),
+            border: '1px dashed',
+            borderColor: isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08),
+          }}
+        >
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8125rem' }}>
+            Load an image to see color groups
+          </Typography>
+        </Box>
       ) : (
-        <Stack spacing={0.5}>
+        <Stack spacing={0.75}>
           {colorGroups.map((group) => {
             const isActive = activeColorGroup === group.index;
             const hexColor = `#${group.color.r.toString(16).padStart(2, '0')}${group.color.g.toString(16).padStart(2, '0')}${group.color.b.toString(16).padStart(2, '0')}`;
@@ -70,41 +88,59 @@ export const ColorGroupsPanel = () => {
                   alignItems: 'center',
                   gap: 1.5,
                   p: 1.5,
-                  borderRadius: '10px',
+                  borderRadius: '8px',
                   cursor: 'pointer',
-                  bgcolor: isActive ? 'primary.light' : 'grey.50',
+                  bgcolor: isActive 
+                    ? (isDark ? alpha('#3E97FF', 0.15) : alpha('#3E97FF', 0.1))
+                    : (isDark ? alpha('#FFFFFF', 0.03) : alpha('#000000', 0.02)),
                   border: '1px solid',
-                  borderColor: isActive ? 'primary.main' : 'grey.200',
+                  borderColor: isActive 
+                    ? 'primary.main' 
+                    : (isDark ? alpha('#FFFFFF', 0.06) : alpha('#000000', 0.04)),
                   transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: isActive ? 'primary.light' : 'grey.100',
-                    borderColor: isActive ? 'primary.main' : 'grey.300',
+                    bgcolor: isActive 
+                      ? (isDark ? alpha('#3E97FF', 0.2) : alpha('#3E97FF', 0.15))
+                      : (isDark ? alpha('#FFFFFF', 0.05) : alpha('#000000', 0.04)),
+                    borderColor: isActive 
+                      ? 'primary.main' 
+                      : (isDark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.08)),
                   },
                 }}
               >
                 <Box
                   sx={{
-                    width: 24,
-                    height: 24,
+                    width: 28,
+                    height: 28,
                     bgcolor: hexColor,
-                    border: '2px solid',
-                    borderColor: 'background.paper',
                     borderRadius: '6px',
                     flexShrink: 0,
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                    border: '2px solid',
+                    borderColor: isDark ? alpha('#FFFFFF', 0.1) : alpha('#FFFFFF', 0.8),
                   }}
                 />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    flex: 1,
-                    fontSize: '0.8125rem',
-                    fontWeight: isActive ? 600 : 500,
-                    color: isActive ? 'primary.dark' : 'text.primary',
-                  }}
-                >
-                  Color {group.index}: {group.pixels.length}px
-                </Typography>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontSize: '0.8125rem',
+                      fontWeight: isActive ? 600 : 500,
+                      color: isActive ? 'primary.main' : 'text.primary',
+                    }}
+                  >
+                    Color {group.index}
+                  </Typography>
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      fontSize: '0.6875rem',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    {group.pixels.length} pixels
+                  </Typography>
+                </Box>
               </Box>
             );
           })}
@@ -112,19 +148,28 @@ export const ColorGroupsPanel = () => {
       )}
 
       {activeColorGroup >= 0 && (
-        <Typography 
-          variant="caption" 
-          color="primary" 
-          sx={{ 
-            mt: 1, 
-            display: 'block',
-            fontSize: '11px',
-            fontStyle: 'italic',
+        <Box
+          sx={{
+            mt: 2,
+            p: 1.5,
+            borderRadius: '8px',
+            bgcolor: isDark ? alpha('#3E97FF', 0.1) : alpha('#3E97FF', 0.08),
+            border: '1px solid',
+            borderColor: alpha('#3E97FF', 0.2),
           }}
         >
-          Filter active: Only Color {activeColorGroup} pixels will be affected
-        </Typography>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              color: 'primary.main',
+            }}
+          >
+            ✓ Filter active: Color {activeColorGroup}
+          </Typography>
+        </Box>
       )}
-    </Paper>
+    </Box>
   );
 };

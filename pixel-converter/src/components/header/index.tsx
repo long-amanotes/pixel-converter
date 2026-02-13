@@ -1,167 +1,174 @@
-import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined';
-import LightModeOutlined from '@mui/icons-material/LightModeOutlined';
-import BrushIcon from '@mui/icons-material/Brush';
-import AppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { useGetIdentity } from '@refinedev/core';
-import { HamburgerMenu, RefineThemedLayoutHeaderProps } from '@refinedev/mui';
+/**
+ * HeaderComponent - Metronic 9 inspired header with branding
+ */
+
 import React, { useContext } from 'react';
+import { Box, Typography, IconButton, Tooltip, alpha, Chip } from '@mui/material';
+import {
+  DarkModeOutlined,
+  LightModeOutlined,
+  HelpOutline,
+  GitHub as GitHubIcon,
+} from '@mui/icons-material';
 import { ColorModeContext } from '../../contexts/color-mode';
 
-type IUser = {
-  id: number;
-  name: string;
-  avatar: string;
+type HeaderComponentProps = {
+  onOpenHelp?: () => void;
 };
 
-export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({ sticky = true }) => {
+export const HeaderComponent: React.FC<HeaderComponentProps> = ({ onOpenHelp }) => {
   const { mode, setMode } = useContext(ColorModeContext);
-
-  const { data: user } = useGetIdentity<IUser>();
+  const isDark = mode === 'dark';
 
   return (
-    <AppBar 
-      position={sticky ? 'sticky' : 'relative'}
-      elevation={0}
+    <Box
+      component="header"
       sx={{
-        backdropFilter: 'blur(8px)',
-        backgroundColor: mode === 'dark' 
-          ? 'rgba(18, 18, 18, 0.95)' 
-          : 'rgba(255, 255, 255, 0.95)',
+        height: 56,
+        px: 3,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        bgcolor: isDark ? '#1B1B29' : '#FFFFFF',
         borderBottom: '1px solid',
         borderColor: 'divider',
+        flexShrink: 0,
       }}
     >
-      <Toolbar sx={{ minHeight: { xs: 64, sm: 70 }, px: { xs: 2, sm: 3 } }}>
-        <Stack 
-          direction="row" 
-          width="100%" 
-          justifyContent="space-between" 
-          alignItems="center"
-          spacing={2}
+      {/* Logo & Brand */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #3E97FF 0%, #7239EA 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(62, 151, 255, 0.3)',
+          }}
         >
-          {/* Left: Logo & Title */}
-          <Stack direction="row" alignItems="center" spacing={1.5}>
-            <HamburgerMenu />
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                px: 1.5,
-                py: 0.5,
-                borderRadius: 2,
-                background: mode === 'dark'
-                  ? 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%)'
-                  : 'linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(156, 39, 176, 0.08) 100%)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  background: mode === 'dark'
-                    ? 'linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(156, 39, 176, 0.15) 100%)'
-                    : 'linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(156, 39, 176, 0.12) 100%)',
-                },
-              }}
-            >
-              <BrushIcon 
-                sx={{ 
-                  fontSize: 28,
-                  color: 'primary.main',
-                  filter: 'drop-shadow(0 2px 4px rgba(33, 150, 243, 0.3))',
-                }} 
-              />
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                  background: mode === 'dark'
-                    ? 'linear-gradient(135deg, #2196F3 0%, #9C27B0 100%)'
-                    : 'linear-gradient(135deg, #1976D2 0%, #7B1FA2 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '-0.02em',
-                  display: { xs: 'none', sm: 'block' },
-                }}
-              >
-                Pixel Art Converter
-              </Typography>
-            </Box>
-          </Stack>
+          <Typography
+            sx={{
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '1.125rem',
+              fontFamily: 'monospace',
+            }}
+          >
+            PX
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              fontSize: '1rem',
+              color: 'text.primary',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+            }}
+          >
+            Pixel Converter
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.6875rem',
+              fontWeight: 500,
+            }}
+          >
+            Transform images to pixel art
+          </Typography>
+        </Box>
+        <Chip
+          label="v1.0"
+          size="small"
+          sx={{
+            height: 22,
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+            bgcolor: isDark ? alpha('#3E97FF', 0.15) : alpha('#3E97FF', 0.1),
+            color: 'primary.main',
+            border: 'none',
+            ml: 1,
+          }}
+        />
+      </Box>
 
-          {/* Right: Controls & User */}
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton
-              color="inherit"
-              onClick={setMode}
-              aria-label={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
-              sx={{
-                borderRadius: 2,
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': {
-                  transform: 'rotate(180deg) scale(1.1)',
-                  backgroundColor: mode === 'dark' 
-                    ? 'rgba(255, 255, 255, 0.08)' 
-                    : 'rgba(0, 0, 0, 0.04)',
-                },
-              }}
-            >
-              {mode === 'dark' ? (
-                <LightModeOutlined sx={{ fontSize: 22 }} />
-              ) : (
-                <DarkModeOutlined sx={{ fontSize: 22 }} />
-              )}
-            </IconButton>
+      {/* Right Actions */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Tooltip title="View on GitHub" arrow>
+          <IconButton
+            size="small"
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: '10px',
+              bgcolor: isDark ? alpha('#FFFFFF', 0.05) : 'grey.100',
+              color: 'text.secondary',
+              transition: 'all 0.15s ease',
+              '&:hover': {
+                bgcolor: isDark ? alpha('#FFFFFF', 0.1) : 'grey.200',
+                color: 'text.primary',
+              },
+            }}
+          >
+            <GitHubIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Tooltip>
 
-            {(user?.avatar || user?.name) && (
-              <Stack 
-                direction="row" 
-                spacing={1.5} 
-                alignItems="center"
-                sx={{
-                  ml: 1,
-                  pl: 1.5,
-                  borderLeft: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                {user?.name && (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      display: { xs: 'none', sm: 'inline-block' },
-                      fontWeight: 500,
-                      color: 'text.primary',
-                    }}
-                  >
-                    {user?.name}
-                  </Typography>
-                )}
-                <Avatar 
-                  src={user?.avatar} 
-                  alt={user?.name}
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    border: '2px solid',
-                    borderColor: 'primary.main',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                      boxShadow: '0 4px 12px rgba(33, 150, 243, 0.4)',
-                    },
-                  }}
-                />
-              </Stack>
+        <Tooltip title={`Switch to ${isDark ? 'light' : 'dark'} mode`} arrow>
+          <IconButton
+            size="small"
+            onClick={setMode}
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: '10px',
+              bgcolor: isDark ? alpha('#FFFFFF', 0.05) : 'grey.100',
+              color: 'text.secondary',
+              transition: 'all 0.15s ease',
+              '&:hover': {
+                bgcolor: isDark ? alpha('#FFFFFF', 0.1) : 'grey.200',
+                color: 'text.primary',
+              },
+            }}
+          >
+            {isDark ? (
+              <LightModeOutlined sx={{ fontSize: 18 }} />
+            ) : (
+              <DarkModeOutlined sx={{ fontSize: 18 }} />
             )}
-          </Stack>
-        </Stack>
-      </Toolbar>
-    </AppBar>
+          </IconButton>
+        </Tooltip>
+
+        {onOpenHelp && (
+          <Tooltip title="Help & shortcuts" arrow>
+            <IconButton
+              size="small"
+              onClick={onOpenHelp}
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: '10px',
+                bgcolor: isDark ? alpha('#FFFFFF', 0.05) : 'grey.100',
+                color: 'text.secondary',
+                transition: 'all 0.15s ease',
+                '&:hover': {
+                  bgcolor: isDark ? alpha('#FFFFFF', 0.1) : 'grey.200',
+                  color: 'text.primary',
+                },
+              }}
+            >
+              <HelpOutline sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Box>
+    </Box>
   );
 };
