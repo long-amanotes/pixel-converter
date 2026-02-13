@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useMemo, useState } from 'react';
+import React, { ReactElement, ReactNode, useMemo, useState, memo, useCallback } from 'react';
 import { Badge, Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 
 export type SidebarTabItem = {
@@ -17,13 +17,13 @@ type TabbedSidebarProps = {
   onTabChange?: (tabId: string) => void;
 };
 
-export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
+export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedSidebar({
   title = 'Panels',
   width = 360,
   tabs,
   initialTabId,
   onTabChange,
-}) => {
+}) {
   const tabIds = useMemo(() => tabs.map((t) => t.id), [tabs]);
 
   const [activeTabId, setActiveTabId] = useState(() => {
@@ -36,47 +36,48 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
     tabs.findIndex((t) => t.id === activeTabId)
   );
 
+  const handleTabChange = useCallback(
+    (_e: React.SyntheticEvent, nextIndex: number) => {
+      const next = tabs[nextIndex];
+      if (!next) return;
+      setActiveTabId(next.id);
+      onTabChange?.(next.id);
+    },
+    [tabs, onTabChange]
+  );
+
   return (
     <Paper
-      elevation={3}
+      elevation={0}
       sx={{
         width,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        borderRadius: 3,
+        borderRadius: '16px',
         border: '1px solid',
         borderColor: 'divider',
+        bgcolor: 'background.paper',
+        boxShadow: (theme) => theme.palette.mode === 'dark' 
+          ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
+          : '0 4px 20px rgba(0, 0, 0, 0.06)',
       }}
     >
       <Box
         sx={{
           px: 2.5,
-          pt: 2.5,
-          pb: 1.5,
-          borderBottom: '2px solid',
+          py: 2,
+          borderBottom: '1px solid',
           borderColor: 'divider',
-          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-          position: 'relative',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '2px',
-            background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-          },
+          bgcolor: 'grey.50',
         }}
       >
         <Typography 
           variant="subtitle1" 
-          fontWeight={700}
+          fontWeight={600}
           sx={{
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-            fontSize: '0.875rem',
+            fontSize: '0.9375rem',
             color: 'text.primary',
           }}
         >
@@ -86,45 +87,49 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
 
       <Tabs
         value={activeIndex}
-        onChange={(_e, nextIndex: number) => {
-          const next = tabs[nextIndex];
-          if (!next) return;
-          setActiveTabId(next.id);
-          onTabChange?.(next.id);
-        }}
+        onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
+        aria-label="Sidebar navigation tabs"
         sx={{
-          px: 1,
-          minHeight: 48,
+          px: 1.5,
+          py: 0.5,
+          minHeight: 44,
           bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
           '& .MuiTab-root': { 
-            minHeight: 48,
-            fontWeight: 600,
+            minHeight: 40,
+            fontWeight: 500,
             fontSize: '0.8125rem',
             textTransform: 'none',
-            transition: 'all 0.3s ease',
-            borderRadius: 2,
-            mx: 0.5,
+            transition: 'all 0.15s ease',
+            borderRadius: '8px',
+            mx: 0.25,
+            px: 1.5,
+            color: 'text.secondary',
             '&:hover': {
-              bgcolor: 'action.hover',
-              transform: 'translateY(-2px)',
+              bgcolor: 'grey.100',
+              color: 'text.primary',
             },
             '&.Mui-selected': {
               color: 'primary.main',
-              bgcolor: 'action.selected',
+              fontWeight: 600,
             },
           },
           '& .MuiTabs-indicator': {
-            height: 3,
-            borderRadius: '3px 3px 0 0',
-            background: 'linear-gradient(90deg, #2196F3 0%, #9C27B0 100%)',
+            height: 2,
+            borderRadius: '2px 2px 0 0',
+            bgcolor: 'primary.main',
           },
         }}
       >
-        {tabs.map((t) => (
+        {tabs.map((t, index) => (
           <Tab
             key={t.id}
+            id={`tab-${t.id}`}
+            aria-controls={`tabpanel-${t.id}`}
+            aria-selected={index === activeIndex}
             {...(t.icon && { icon: t.icon })}
             {...(t.icon && { iconPosition: 'start' as const })}
             label={t.label}
@@ -145,6 +150,8 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
       </Tabs>
 
       <Box
+        role="tabpanel"
+        aria-labelledby={`tab-${tabs[activeIndex]?.id}`}
         sx={{
           flex: 1,
           overflowY: 'auto',
@@ -153,12 +160,12 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = ({
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
-          bgcolor: 'background.default',
+          bgcolor: 'grey.50',
         }}
       >
         {tabs[activeIndex]?.content}
       </Box>
     </Paper>
   );
-};
+});
 

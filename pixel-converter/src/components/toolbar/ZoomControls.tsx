@@ -48,10 +48,10 @@ export const ZoomControls: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         gap: 1.5,
-        minWidth: 220,
+        minWidth: 200,
       }}
     >
-      <Typography variant="body2" sx={{ fontSize: '13px', fontWeight: 500, color: '#666' }}>
+      <Typography variant="body2" sx={{ fontSize: '0.8125rem', fontWeight: 500, color: 'text.secondary' }}>
         Zoom:
       </Typography>
       <Slider
@@ -64,21 +64,27 @@ export const ZoomControls: React.FC = () => {
         valueLabelFormat={(value) => `${value}%`}
         sx={{ 
           flex: 1,
-          maxWidth: 150,
+          maxWidth: 140,
           '& .MuiSlider-thumb': {
-            width: 18,
-            height: 18,
-            border: '2px solid white',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+            width: 16,
+            height: 16,
+            bgcolor: 'primary.main',
+            border: '2px solid',
+            borderColor: 'background.paper',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
+            '&:hover': {
+              boxShadow: '0 3px 6px rgba(0, 0, 0, 0.2)',
+            },
           },
           '& .MuiSlider-track': {
-            height: 6,
-            borderRadius: 3,
+            height: 4,
+            borderRadius: 2,
+            bgcolor: 'primary.main',
           },
           '& .MuiSlider-rail': {
-            height: 6,
-            borderRadius: 3,
-            bgcolor: '#ddd',
+            height: 4,
+            borderRadius: 2,
+            bgcolor: 'grey.200',
           },
         }}
         aria-label="Zoom level"
@@ -86,11 +92,15 @@ export const ZoomControls: React.FC = () => {
       <Typography
         variant="body2"
         sx={{
-          minWidth: 50,
+          minWidth: 45,
           textAlign: 'center',
-          fontWeight: 500,
-          fontSize: '13px',
-          color: '#666',
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          color: 'text.primary',
+          bgcolor: 'grey.100',
+          px: 1,
+          py: 0.5,
+          borderRadius: '6px',
         }}
       >
         {zoomPercentage}%

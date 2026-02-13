@@ -58,7 +58,7 @@ export const PaintModeControls: React.FC = () => {
     <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
       {/* Color Picker */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant="body2" sx={{ fontSize: '13px', fontWeight: 500, color: '#666' }}>
+        <Typography variant="body2" sx={{ fontSize: '0.8125rem', fontWeight: 500, color: 'text.secondary' }}>
           Paint Color:
         </Typography>
         <input
@@ -66,11 +66,12 @@ export const PaintModeControls: React.FC = () => {
           value={paintColor}
           onChange={handleColorChange}
           style={{
-            width: 40,
-            height: 40,
-            border: '1px solid #ddd',
-            borderRadius: 6,
+            width: 36,
+            height: 36,
+            border: 'none',
+            borderRadius: 8,
             cursor: 'pointer',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}
           title="Select paint color"
         />
@@ -84,19 +85,20 @@ export const PaintModeControls: React.FC = () => {
         disabled={selectedPixels.size === 0}
         size="small"
         sx={{
-          boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
+          borderRadius: '10px',
+          px: 2,
+          py: 0.75,
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          textTransform: 'none',
+          boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 4px 8px rgba(33, 150, 243, 0.4)',
-            transform: 'translateY(-1px)',
+            boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
           },
-          '&:active': {
-            transform: 'translateY(0)',
-            boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
-          },
-          transition: 'all 0.2s',
+          transition: 'all 0.15s ease',
         }}
       >
-        Apply to Selected ({selectedPixels.size})
+        Apply ({selectedPixels.size})
       </Button>
 
       {/* Deselect All Button */}
@@ -106,16 +108,20 @@ export const PaintModeControls: React.FC = () => {
         disabled={selectedPixels.size === 0}
         size="small"
         sx={{
+          borderRadius: '10px',
+          px: 2,
+          py: 0.75,
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          textTransform: 'none',
+          borderWidth: 1.5,
           '&:hover': {
-            transform: 'translateY(-1px)',
+            borderWidth: 1.5,
           },
-          '&:active': {
-            transform: 'translateY(0)',
-          },
-          transition: 'all 0.2s',
+          transition: 'all 0.15s ease',
         }}
       >
-        Deselect All
+        Deselect
       </Button>
     </Box>
   );

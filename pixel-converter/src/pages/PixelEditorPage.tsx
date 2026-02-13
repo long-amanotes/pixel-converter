@@ -7,7 +7,7 @@
  * - 12.1: Display a collapsible instructions hint panel
  */
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback, Suspense, lazy } from 'react';
 import { Box, Drawer, useMediaQuery, useTheme, CircularProgress, Typography } from '@mui/material';
 import {
   Category as CategoryIcon,
@@ -17,17 +17,38 @@ import {
 } from '@mui/icons-material';
 
 import { CanvasComponent } from '../components/canvas';
-import { HintPanel } from '../components/common';
+import { HintPanel, LoadingSpinner } from '../components/common';
 import { TabbedSidebar } from '../components/sidebar';
-import { ColorGroupsPanel } from '../components/sidebar/ColorGroupsPanel';
-import { ColorTypesPanel } from '../components/sidebar/ColorTypesPanel';
-import { DataGroupsPanel } from '../components/sidebar/DataGroupsPanel';
-import { ExportImportPanel } from '../components/sidebar/ExportImportPanel';
-import { PalettePanel } from '../components/sidebar/PalettePanel';
 import { ToolbarComponent } from '../components/toolbar';
 import { useToast } from '../contexts/toast';
 import { useImageLoader, useStorageRestore } from '../hooks';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+
+// Lazy load sidebar panels for better initial load performance
+const ColorGroupsPanel = lazy(() => 
+  import('../components/sidebar/ColorGroupsPanel').then(m => ({ default: m.ColorGroupsPanel }))
+);
+const ColorTypesPanel = lazy(() => 
+  import('../components/sidebar/ColorTypesPanel').then(m => ({ default: m.ColorTypesPanel }))
+);
+const DataGroupsPanel = lazy(() => 
+  import('../components/sidebar/DataGroupsPanel').then(m => ({ default: m.DataGroupsPanel }))
+);
+const ExportImportPanel = lazy(() => 
+  import('../components/sidebar/ExportImportPanel').then(m => ({ default: m.ExportImportPanel }))
+);
+const PalettePanel = lazy(() => 
+  import('../components/sidebar/PalettePanel').then(m => ({ default: m.PalettePanel }))
+);
+
+/**
+ * Fallback component for lazy-loaded panels
+ */
+const PanelFallback = () => (
+  <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+    <CircularProgress size={24} />
+  </Box>
+);
 
 /**
  * Main pixel editor page component
@@ -71,31 +92,51 @@ export const PixelEditorPage = () => {
             id: 'palette',
             label: 'Palette',
             icon: <PaletteIcon fontSize="small" />,
-            content: <PalettePanel />,
+            content: (
+              <Suspense fallback={<PanelFallback />}>
+                <PalettePanel />
+              </Suspense>
+            ),
           },
           {
             id: 'groups',
             label: 'Groups',
             icon: <CategoryIcon fontSize="small" />,
-            content: <ColorGroupsPanel />,
+            content: (
+              <Suspense fallback={<PanelFallback />}>
+                <ColorGroupsPanel />
+              </Suspense>
+            ),
           },
           {
             id: 'types',
             label: 'Types',
             icon: <CategoryIcon fontSize="small" />,
-            content: <ColorTypesPanel />,
+            content: (
+              <Suspense fallback={<PanelFallback />}>
+                <ColorTypesPanel />
+              </Suspense>
+            ),
           },
           {
             id: 'data',
             label: 'Data',
             icon: <DataObjectIcon fontSize="small" />,
-            content: <DataGroupsPanel />,
+            content: (
+              <Suspense fallback={<PanelFallback />}>
+                <DataGroupsPanel />
+              </Suspense>
+            ),
           },
           {
             id: 'export',
             label: 'Export',
             icon: <ShareIcon fontSize="small" />,
-            content: <ExportImportPanel />,
+            content: (
+              <Suspense fallback={<PanelFallback />}>
+                <ExportImportPanel />
+              </Suspense>
+            ),
           },
         ]}
       />
@@ -111,7 +152,7 @@ export const PixelEditorPage = () => {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        bgcolor: 'background.default',
+        bgcolor: 'grey.100',
       }}
     >
       {isRestoring ? (
@@ -154,8 +195,8 @@ export const PixelEditorPage = () => {
               flex: 1,
               display: 'flex',
               overflow: 'hidden',
-              gap: 2,
-              p: 2,
+              gap: 2.5,
+              p: 2.5,
               minHeight: 0,
             }}
           >

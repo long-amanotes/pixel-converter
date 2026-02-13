@@ -51,6 +51,7 @@ export interface PaletteSlice {
   // Actions
   addPaletteColor: (color: string) => void;
   updatePaletteColor: (index: number, color: string) => void;
+  removePaletteColor: (index: number) => void;
   setPalette: (palette: string[]) => void;
   setColorGroups: (colorGroups: ColorGroup[]) => void;
   regroup: () => void;

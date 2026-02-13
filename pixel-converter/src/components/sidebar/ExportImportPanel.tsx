@@ -161,19 +161,24 @@ export const ExportImportPanel = () => {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 2, bgcolor: 'transparent', boxShadow: 'none' }}>
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        p: 2.5, 
+        bgcolor: 'background.paper', 
+        borderRadius: '12px',
+        border: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
       <Typography 
         variant="h6" 
         gutterBottom
         sx={{
-          fontSize: '14px',
+          fontSize: '0.8125rem',
           fontWeight: 600,
-          color: '#333',
-          mb: 1.5,
-          pb: 1,
-          borderBottom: '2px solid #e0e0e0',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          color: 'text.primary',
+          mb: 2,
         }}
       >
         Export / Import
@@ -189,16 +194,18 @@ export const ExportImportPanel = () => {
           size="small"
           disabled={pixels.length === 0}
           sx={{
-            boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
+            borderRadius: '10px',
+            py: 1,
+            fontWeight: 600,
+            fontSize: '0.8125rem',
+            textTransform: 'none',
+            boxShadow: 'none',
+            bgcolor: 'primary.main',
             '&:hover': {
-              boxShadow: '0 4px 8px rgba(33, 150, 243, 0.4)',
-              transform: 'translateY(-1px)',
+              bgcolor: 'primary.dark',
+              boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
             },
-            '&:active': {
-              transform: 'translateY(0)',
-              boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
-            },
-            transition: 'all 0.2s',
+            transition: 'all 0.15s ease',
           }}
         >
           Export JSON
@@ -211,16 +218,18 @@ export const ExportImportPanel = () => {
           size="small"
           disabled={pixels.length === 0}
           sx={{
-            boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
+            borderRadius: '10px',
+            py: 1,
+            fontWeight: 600,
+            fontSize: '0.8125rem',
+            textTransform: 'none',
+            boxShadow: 'none',
+            bgcolor: 'success.main',
             '&:hover': {
-              boxShadow: '0 4px 8px rgba(33, 150, 243, 0.4)',
-              transform: 'translateY(-1px)',
+              bgcolor: 'success.dark',
+              boxShadow: '0 4px 12px rgba(80, 205, 137, 0.35)',
             },
-            '&:active': {
-              transform: 'translateY(0)',
-              boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
-            },
-            transition: 'all 0.2s',
+            transition: 'all 0.15s ease',
           }}
         >
           Export PNG
@@ -236,13 +245,16 @@ export const ExportImportPanel = () => {
         size="small"
         sx={{ 
           mb: 1,
+          borderRadius: '10px',
+          py: 1,
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          textTransform: 'none',
+          borderWidth: 1.5,
           '&:hover': {
-            transform: 'translateY(-1px)',
+            borderWidth: 1.5,
           },
-          '&:active': {
-            transform: 'translateY(0)',
-          },
-          transition: 'all 0.2s',
+          transition: 'all 0.15s ease',
         }}
       >
         Import JSON
@@ -259,13 +271,16 @@ export const ExportImportPanel = () => {
           size="small"
           sx={{ 
             mb: 2,
+            borderRadius: '10px',
+            py: 1,
+            fontWeight: 600,
+            fontSize: '0.8125rem',
+            textTransform: 'none',
+            borderWidth: 1.5,
             '&:hover': {
-              transform: 'translateY(-1px)',
+              borderWidth: 1.5,
             },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
-            transition: 'all 0.2s',
+            transition: 'all 0.15s ease',
           }}
         >
           Clear Saved Data

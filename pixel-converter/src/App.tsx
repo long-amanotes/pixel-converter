@@ -25,41 +25,44 @@ import { ColorModeContextProvider } from './contexts/color-mode';
 import { ToastProvider } from './contexts/toast';
 import { dataProvider } from './providers/data';
 import { PixelEditorPage } from './pages/PixelEditorPage';
+import { ErrorBoundary } from './components/common';
 
 function App() {
   return (
-    <BrowserRouter>
-      <RefineKbarProvider>
-        <ColorModeContextProvider>
-          <CssBaseline />
-          <GlobalStyles styles={{ html: { WebkitFontSmoothing: 'auto' } }} />
-          <ToastProvider>
-            <RefineSnackbarProvider>
-              <DevtoolsProvider>
-                <Refine
-                  notificationProvider={useNotificationProvider}
-                  routerProvider={routerProvider}
-                  dataProvider={dataProvider}
-                  options={{
-                    syncWithLocation: true,
-                    warnWhenUnsavedChanges: false, // Disable for pixel editor
-                    projectId: 'RpaMLk-J9JpOz-kIr2y3',
-                  }}
-                >
-                  <Routes>
-                    <Route index element={<PixelEditorPage />} />
-                  </Routes>
-                  <RefineKbar />
-                  <UnsavedChangesNotifier />
-                  <DocumentTitleHandler />
-                </Refine>
-                <DevtoolsPanel />
-              </DevtoolsProvider>
-            </RefineSnackbarProvider>
-          </ToastProvider>
-        </ColorModeContextProvider>
-      </RefineKbarProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <RefineKbarProvider>
+          <ColorModeContextProvider>
+            <CssBaseline />
+            <GlobalStyles styles={{ html: { WebkitFontSmoothing: 'auto' } }} />
+            <ToastProvider>
+              <RefineSnackbarProvider>
+                <DevtoolsProvider>
+                  <Refine
+                    notificationProvider={useNotificationProvider}
+                    routerProvider={routerProvider}
+                    dataProvider={dataProvider}
+                    options={{
+                      syncWithLocation: true,
+                      warnWhenUnsavedChanges: false, // Disable for pixel editor
+                      projectId: 'RpaMLk-J9JpOz-kIr2y3',
+                    }}
+                  >
+                    <Routes>
+                      <Route index element={<PixelEditorPage />} />
+                    </Routes>
+                    <RefineKbar />
+                    <UnsavedChangesNotifier />
+                    <DocumentTitleHandler />
+                  </Refine>
+                  <DevtoolsPanel />
+                </DevtoolsProvider>
+              </RefineSnackbarProvider>
+            </ToastProvider>
+          </ColorModeContextProvider>
+        </RefineKbarProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

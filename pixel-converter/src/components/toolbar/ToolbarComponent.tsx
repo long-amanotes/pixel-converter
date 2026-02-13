@@ -133,9 +133,10 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
     <Paper
       elevation={0}
       sx={{
-        p: 2,
+        px: 3,
+        py: 2,
         bgcolor: 'background.paper',
-        borderBottom: '2px solid',
+        borderBottom: '1px solid',
         borderColor: 'divider',
         borderRadius: 0,
         display: 'flex',
@@ -143,21 +144,9 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
         flexWrap: 'wrap',
         alignItems: 'center',
         position: 'relative',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '3px',
-          background: 'linear-gradient(90deg, #2196F3 0%, #9C27B0 50%, #2196F3 100%)',
-          backgroundSize: '200% 100%',
-          animation: 'shimmer 3s linear infinite',
-        },
-        '@keyframes shimmer': {
-          '0%': { backgroundPosition: '200% 0' },
-          '100%': { backgroundPosition: '-200% 0' },
-        },
+        boxShadow: (theme) => theme.palette.mode === 'dark' 
+          ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
+          : '0 4px 20px rgba(0, 0, 0, 0.05)',
       }}
     >
       {onToggleSidebar && (
@@ -167,13 +156,13 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
             aria-label="Toggle sidebar" 
             onClick={onToggleSidebar}
             sx={{
-              borderRadius: 2,
-              bgcolor: 'action.hover',
-              transition: 'all 0.3s ease',
+              borderRadius: '10px',
+              bgcolor: 'grey.100',
+              color: 'grey.700',
+              transition: 'all 0.15s ease',
               '&:hover': {
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                transform: 'scale(1.05)',
+                bgcolor: 'grey.200',
+                color: 'grey.900',
               },
             }}
           >
@@ -198,23 +187,23 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           onClick={handleUploadClick}
           size="medium"
           sx={{
-            borderRadius: 2,
-            px: 2.5,
-            py: 1,
+            borderRadius: '10px',
+            px: 3,
+            py: 1.25,
             fontWeight: 600,
+            fontSize: '0.875rem',
             textTransform: 'none',
-            boxShadow: '0 4px 12px rgba(33, 150, 243, 0.25)',
-            background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+            boxShadow: 'none',
+            bgcolor: 'primary.main',
             '&:hover': {
-              boxShadow: '0 6px 16px rgba(33, 150, 243, 0.4)',
-              transform: 'translateY(-2px)',
-              background: 'linear-gradient(135deg, #1976D2 0%, #1565C0 100%)',
+              bgcolor: 'primary.dark',
+              boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
+              transform: 'translateY(-1px)',
             },
             '&:active': {
               transform: 'translateY(0)',
-              boxShadow: '0 4px 12px rgba(33, 150, 243, 0.25)',
             },
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'all 0.15s ease',
           }}
         >
           Upload Image
@@ -229,16 +218,16 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
             onClick={() => undo()}
             disabled={undoStackSize === 0}
             sx={{
-              borderRadius: 2,
-              bgcolor: undoStackSize > 0 ? 'action.hover' : 'transparent',
-              transition: 'all 0.3s ease',
+              borderRadius: '10px',
+              bgcolor: undoStackSize > 0 ? 'grey.100' : 'transparent',
+              color: 'grey.700',
+              transition: 'all 0.15s ease',
               '&:hover:not(:disabled)': {
-                bgcolor: 'warning.main',
-                color: 'warning.contrastText',
-                transform: 'rotate(-15deg) scale(1.05)',
+                bgcolor: 'grey.200',
+                color: 'grey.900',
               },
               '&:disabled': {
-                opacity: 0.3,
+                opacity: 0.4,
               },
             }}
           >
@@ -261,46 +250,37 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           'aria-label': 'Pixel art size',
         }}
         sx={{ 
-          width: 140,
+          width: 120,
           '& .MuiInputLabel-root': {
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            '&.Mui-focused': {
-              fontWeight: 700,
-            },
+            fontWeight: 500,
+            fontSize: '0.8125rem',
+            color: 'grey.600',
           },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2.5,
-            bgcolor: 'background.default',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            borderRadius: '10px',
+            bgcolor: 'grey.50',
+            transition: 'all 0.15s ease',
             '& fieldset': {
-              borderWidth: 2,
-              borderColor: 'divider',
+              borderWidth: 1,
+              borderColor: 'grey.200',
             },
             '&:hover': {
-              bgcolor: 'action.hover',
-              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)',
+              bgcolor: 'grey.100',
               '& fieldset': {
-                borderColor: 'primary.main',
+                borderColor: 'grey.300',
               },
             },
             '&.Mui-focused': {
               bgcolor: 'background.paper',
-              boxShadow: '0 4px 16px rgba(33, 150, 243, 0.3)',
               '& fieldset': {
-                borderWidth: 2,
+                borderWidth: 1.5,
                 borderColor: 'primary.main',
-              },
-            },
-            '&.Mui-error': {
-              '& fieldset': {
-                borderColor: 'error.main',
               },
             },
           },
           '& .MuiOutlinedInput-input': {
-            fontWeight: 600,
-            fontSize: '0.95rem',
+            fontWeight: 500,
+            fontSize: '0.875rem',
           },
         }}
         size="small"
@@ -310,41 +290,37 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
       <FormControl 
         size="small" 
         sx={{ 
-          minWidth: 200,
+          minWidth: 170,
           '& .MuiInputLabel-root': {
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            '&.Mui-focused': {
-              fontWeight: 700,
-            },
+            fontWeight: 500,
+            fontSize: '0.8125rem',
+            color: 'grey.600',
           },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2.5,
-            bgcolor: 'background.default',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            borderRadius: '10px',
+            bgcolor: 'grey.50',
+            transition: 'all 0.15s ease',
             '& fieldset': {
-              borderWidth: 2,
-              borderColor: 'divider',
+              borderWidth: 1,
+              borderColor: 'grey.200',
             },
             '&:hover': {
-              bgcolor: 'action.hover',
-              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)',
+              bgcolor: 'grey.100',
               '& fieldset': {
-                borderColor: 'primary.main',
+                borderColor: 'grey.300',
               },
             },
             '&.Mui-focused': {
               bgcolor: 'background.paper',
-              boxShadow: '0 4px 16px rgba(33, 150, 243, 0.3)',
               '& fieldset': {
-                borderWidth: 2,
+                borderWidth: 1.5,
                 borderColor: 'primary.main',
               },
             },
           },
           '& .MuiSelect-select': {
-            fontWeight: 600,
-            fontSize: '0.9rem',
+            fontWeight: 500,
+            fontSize: '0.8125rem',
           },
         }}
       >
@@ -358,24 +334,26 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           MenuProps={{
             PaperProps: {
               sx: {
-                borderRadius: 2,
+                borderRadius: '12px',
                 mt: 1,
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
+                border: '1px solid',
+                borderColor: 'divider',
                 '& .MuiMenuItem-root': {
-                  borderRadius: 1.5,
+                  borderRadius: '8px',
                   mx: 1,
-                  my: 0.5,
+                  my: 0.25,
                   fontWeight: 500,
-                  fontSize: '0.9rem',
-                  transition: 'all 0.2s',
+                  fontSize: '0.8125rem',
+                  transition: 'all 0.15s ease',
                   '&:hover': {
                     bgcolor: 'primary.main',
                     color: 'primary.contrastText',
-                    transform: 'translateX(4px)',
                   },
                   '&.Mui-selected': {
                     bgcolor: 'primary.light',
-                    fontWeight: 700,
+                    color: 'primary.dark',
+                    fontWeight: 600,
                     '&:hover': {
                       bgcolor: 'primary.main',
                       color: 'primary.contrastText',
@@ -395,41 +373,37 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
       <FormControl 
         size="small" 
         sx={{ 
-          minWidth: 200,
+          minWidth: 160,
           '& .MuiInputLabel-root': {
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            '&.Mui-focused': {
-              fontWeight: 700,
-            },
+            fontWeight: 500,
+            fontSize: '0.8125rem',
+            color: 'grey.600',
           },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2.5,
-            bgcolor: 'background.default',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            borderRadius: '10px',
+            bgcolor: 'grey.50',
+            transition: 'all 0.15s ease',
             '& fieldset': {
-              borderWidth: 2,
-              borderColor: 'divider',
+              borderWidth: 1,
+              borderColor: 'grey.200',
             },
             '&:hover': {
-              bgcolor: 'action.hover',
-              boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)',
+              bgcolor: 'grey.100',
               '& fieldset': {
-                borderColor: 'primary.main',
+                borderColor: 'grey.300',
               },
             },
             '&.Mui-focused': {
               bgcolor: 'background.paper',
-              boxShadow: '0 4px 16px rgba(33, 150, 243, 0.3)',
               '& fieldset': {
-                borderWidth: 2,
+                borderWidth: 1.5,
                 borderColor: 'primary.main',
               },
             },
           },
           '& .MuiSelect-select': {
-            fontWeight: 600,
-            fontSize: '0.9rem',
+            fontWeight: 500,
+            fontSize: '0.8125rem',
           },
         }}
       >
@@ -443,24 +417,26 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           MenuProps={{
             PaperProps: {
               sx: {
-                borderRadius: 2,
+                borderRadius: '12px',
                 mt: 1,
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
+                border: '1px solid',
+                borderColor: 'divider',
                 '& .MuiMenuItem-root': {
-                  borderRadius: 1.5,
+                  borderRadius: '8px',
                   mx: 1,
-                  my: 0.5,
+                  my: 0.25,
                   fontWeight: 500,
-                  fontSize: '0.9rem',
-                  transition: 'all 0.2s',
+                  fontSize: '0.8125rem',
+                  transition: 'all 0.15s ease',
                   '&:hover': {
                     bgcolor: 'primary.main',
                     color: 'primary.contrastText',
-                    transform: 'translateX(4px)',
                   },
                   '&.Mui-selected': {
                     bgcolor: 'primary.light',
-                    fontWeight: 700,
+                    color: 'primary.dark',
+                    fontWeight: 600,
                     '&:hover': {
                       bgcolor: 'primary.main',
                       color: 'primary.contrastText',
@@ -493,13 +469,13 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
           aria-label={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
           onClick={setMode}
           sx={{
-            borderRadius: 2,
-            bgcolor: 'action.hover',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            borderRadius: '10px',
+            bgcolor: 'grey.100',
+            color: 'grey.700',
+            transition: 'all 0.15s ease',
             '&:hover': {
-              bgcolor: mode === 'dark' ? 'warning.main' : 'primary.main',
-              color: mode === 'dark' ? 'warning.contrastText' : 'primary.contrastText',
-              transform: 'rotate(180deg) scale(1.1)',
+              bgcolor: 'grey.200',
+              color: 'grey.900',
             },
           }}
         >
@@ -518,13 +494,13 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
             aria-label="Help" 
             onClick={onOpenHelp}
             sx={{
-              borderRadius: 2,
-              bgcolor: 'action.hover',
-              transition: 'all 0.3s ease',
+              borderRadius: '10px',
+              bgcolor: 'grey.100',
+              color: 'grey.700',
+              transition: 'all 0.15s ease',
               '&:hover': {
-                bgcolor: 'info.main',
-                color: 'info.contrastText',
-                transform: 'scale(1.1) rotate(15deg)',
+                bgcolor: 'grey.200',
+                color: 'grey.900',
               },
             }}
           >

@@ -53,6 +53,15 @@ export const createPaletteSlice: StateCreator<
       return { palette: newPalette };
     }),
 
+  removePaletteColor: (index: number) =>
+    set((state) => {
+      if (index < 0 || index >= state.palette.length || state.palette.length <= 1) {
+        return state;
+      }
+      const newPalette = state.palette.filter((_, i) => i !== index);
+      return { palette: newPalette };
+    }),
+
   setPalette: (palette: string[]) =>
     set(() => ({
       palette,

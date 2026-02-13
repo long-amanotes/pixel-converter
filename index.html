@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <label>Target Size:</label>
+                    <input type="number" id="sizeInput" value="64" min="8" max="256" style="width:70px">
+                </div>
+
+                <div class="toolbar-group">
+                    <label>Scale Mode:</label>
+                    <select id="scaleMode">
+                        <option value="majority" selected>Block Majority</option>
+                        <option value="nearest">Nearest Neighbor</option>
+                    </select>
+                </div>
+
+                <div class="toolbar-group">
+                    <label>Edit Mode:</label>
+                    <select id="editMode">
+                        <option value="group" selected>Group Data</option>
+                        <option value="colorType">Color Type</option>
+                        <option value="paint">Paint Pixel</option>
+                        <option value="erase">Erase Pixel</option>
+                    </select>
+                </div>
+
+                <div class="toolbar-group">
+                    <label>Zoom:</label>
+                    <input type="range" id="zoomSlider" min="1" max="20" value="10" step="0.5">
+                    <span class="zoom-display" id="zoomDisplay">100%</span>
+                </div>
+
+                <div class="toolbar-group">
+                    <input type="file" id="upload">
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="btn btn-secondary" id="undoBtn">↶ Undo</button>
+                </div>
+            </div>
+
+            <div id="paintControls"
+                style="display:none; padding: 16px 20px; background: #fff3cd; border-bottom: 1px solid #ddd; min-height: 70px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <label style="margin: 0;">Paint Color:</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-picker-button" id="paintColorButton"></div>
+                        <div class="color-picker-popup" id="paintColorPopup">
+                            <div class="color-picker-grid" id="paintColorGrid"></div>
+                            <div class="color-picker-input-wrapper">
+                                <input type="text" id="paintColorHex" placeholder="#FF0000" maxlength="7">
+                                <input type="color" id="paintColorNative" value="#FF0000">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn" id="applyPaint">Apply to Selected</button>
+                    <button class="btn btn-secondary" id="deselectPaint">Deselect All</button>
+                </div>
+            </div>
+
+            <div id="eraseControls"
+                style="display:none; padding: 16px 20px; background: #f8d7da; border-bottom: 1px solid #ddd; min-height: 70px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="btn" id="applyErase">Erase Selected</button>
+                    <button class="btn btn-secondary" id="deselectErase">Deselect All</button>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <div class="drop-zone">
+                    <div class="drop-zone-icon">📁</div>
+                    <div class="drop-zone-text">Drop image here</div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="canvas" width="640" height="640"></canvas>
+                </div>
+            </div>
+
+            <div class="hint">
+                <div class="hint-header" onclick="toggleHint()">
+                    <span class="hint-title">💡 Instructions</span>
+                    <button class="hint-toggle" id="hintToggle">💡</button>
+                </div>
+                <div class="hint-content" id="hintContent">
+                    <div style="margin-top: 8px;">
+                        <b>Modes:</b> Group Data • Color Type • Paint • Erase<br>
+                        <b>Group Data:</b> Drag rectangle to assign pixels to data groups<br>
+                        <b>Color Type:</b> Drag rectangle to assign pixels to color type groups<br>
+                        <b>Paint:</b> Select pixels → choose color → apply<br>
+                        <b>Erase:</b> Select pixels → erase<br>
+                        <b>Color Filter:</b> Click color in "Group Color" to filter operations<br>
+                        <b>Shortcuts:</b> Ctrl+Z (undo) • Ctrl+V (paste image)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="panel">
+                <h3>Palette</h3>
+                <div id="palette"></div>
+                <button class="btn" id="addColor">+ Add Color</button>
+
+                <h3>Group Color</h3>
+                <div id="colorGroups"></div>
+
+                <h3>Group Color Type & Statistics</h3>
+                <button class="btn" id="parseColorType">Parse from Group Color</button>
+                <div id="colorTypeGroups"></div>
+
+                <h3>Group Data</h3>
+                <div class="row">
+                    <button class="btn" id="addDataGroup">Add</button>
+                    <button class="btn btn-secondary" id="deleteDataGroup">Delete</button>
+                    <button class="btn btn-secondary" id="clearDataGroup">Clear</button>
+                    <button class="btn btn-secondary" id="showUngrouped">Show Ungrouped</button>
+                </div>
+                <div id="dataGroups"></div>
+
+                <h3>Export / Import</h3>
+                <div class="row">
+                    <button class="btn" id="exportBtn">Export JSON</button>
+                    <button class="btn" id="exportPngBtn">Export PNG</button>
+                    <button class="btn btn-secondary" id="importBtn">Import JSON</button>
+                </div>
+                <input type="file" id="importFile" accept=".json" style="display:none">
+                <textarea id="output" placeholder="JSON output will appear here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/palette.js"></script>
+    <script src="js/colorPicker.js"></script>
+    <script src="js/imageLoader.js"></script>
+    <script src="js/converter.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/undo.js"></script>
+    <script src="js/editModes.js"></script>
+    <script src="js/mouse.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/exportImport.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+
+</html>

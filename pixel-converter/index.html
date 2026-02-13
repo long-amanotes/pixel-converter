@@ -4,38 +4,50 @@
     <meta charset="utf-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="refine | Build your React-based CRUD applications, without constraints."
-    />
-    <meta
-      data-rh="true"
-      property="og:image"
-      content="https://refine.dev/img/refine_social.png"
-    />
-    <meta
-      data-rh="true"
-      name="twitter:image"
-      content="https://refine.dev/img/refine_social.png"
-    />
-    <title>
-      Refine - Build your React-based CRUD applications, without constraints.
-    </title>
+    <meta name="theme-color" content="#1B84FF" />
+    <meta name="description" content="Pixel Art Converter - Transform images into pixel art with advanced editing tools" />
+    <meta property="og:title" content="Pixel Art Converter" />
+    <meta property="og:description" content="Transform images into pixel art with advanced editing tools" />
+    <meta property="og:type" content="website" />
+    <title>Pixel Art Converter</title>
+    <!-- Inter Font - Modern, clean typography like Metronic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /* Custom scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(128, 128, 128, 0.3);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(128, 128, 128, 0.5);
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm dev` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>

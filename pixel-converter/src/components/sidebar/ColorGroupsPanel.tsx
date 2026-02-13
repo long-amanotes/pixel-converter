@@ -28,23 +28,27 @@ export const ColorGroupsPanel = () => {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 2, bgcolor: 'transparent', boxShadow: 'none' }}>
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        p: 2.5, 
+        bgcolor: 'background.paper', 
+        borderRadius: '12px',
+        border: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
       <Typography 
         variant="h6" 
         gutterBottom
         sx={{
-          fontSize: '14px',
+          fontSize: '0.8125rem',
           fontWeight: 600,
           color: 'text.primary',
-          mb: 1.5,
-          pb: 1,
-          borderBottom: '2px solid',
-          borderColor: 'divider',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          mb: 2,
         }}
       >
-        Group Color
+        Color Groups
       </Typography>
 
       {colorGroups.length === 0 ? (
@@ -64,38 +68,39 @@ export const ColorGroupsPanel = () => {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
-                  p: 1.25,
-                  borderRadius: '6px',
+                  gap: 1.5,
+                  p: 1.5,
+                  borderRadius: '10px',
                   cursor: 'pointer',
-                  bgcolor: isActive ? 'action.selected' : 'background.paper',
-                  border: '2px solid',
-                  borderColor: isActive ? 'primary.main' : 'transparent',
-                  transition: 'all 0.2s',
+                  bgcolor: isActive ? 'primary.light' : 'grey.50',
+                  border: '1px solid',
+                  borderColor: isActive ? 'primary.main' : 'grey.200',
+                  transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: isActive ? 'action.selected' : 'action.hover',
-                    borderColor: isActive ? 'primary.main' : 'divider',
+                    bgcolor: isActive ? 'primary.light' : 'grey.100',
+                    borderColor: isActive ? 'primary.main' : 'grey.300',
                   },
                 }}
               >
                 <Box
                   sx={{
-                    width: 20,
-                    height: 20,
+                    width: 24,
+                    height: 24,
                     bgcolor: hexColor,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: '4px',
+                    border: '2px solid',
+                    borderColor: 'background.paper',
+                    borderRadius: '6px',
                     flexShrink: 0,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 />
                 <Typography 
                   variant="body2" 
                   sx={{ 
                     flex: 1,
-                    fontSize: '13px',
-                    fontWeight: isActive ? 500 : 400,
-                    color: 'text.primary',
+                    fontSize: '0.8125rem',
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? 'primary.dark' : 'text.primary',
                   }}
                 >
                   Color {group.index}: {group.pixels.length}px

@@ -56,19 +56,20 @@ export const EraseModeControls: React.FC = () => {
         disabled={selectedPixels.size === 0}
         size="small"
         sx={{
-          boxShadow: '0 2px 4px rgba(211, 47, 47, 0.3)',
+          borderRadius: '10px',
+          px: 2,
+          py: 0.75,
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          textTransform: 'none',
+          boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 4px 8px rgba(211, 47, 47, 0.4)',
-            transform: 'translateY(-1px)',
+            boxShadow: '0 4px 12px rgba(241, 65, 108, 0.35)',
           },
-          '&:active': {
-            transform: 'translateY(0)',
-            boxShadow: '0 2px 4px rgba(211, 47, 47, 0.3)',
-          },
-          transition: 'all 0.2s',
+          transition: 'all 0.15s ease',
         }}
       >
-        Erase Selected ({selectedPixels.size})
+        Erase ({selectedPixels.size})
       </Button>
 
       {/* Deselect All Button */}
@@ -78,16 +79,20 @@ export const EraseModeControls: React.FC = () => {
         disabled={selectedPixels.size === 0}
         size="small"
         sx={{
+          borderRadius: '10px',
+          px: 2,
+          py: 0.75,
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          textTransform: 'none',
+          borderWidth: 1.5,
           '&:hover': {
-            transform: 'translateY(-1px)',
+            borderWidth: 1.5,
           },
-          '&:active': {
-            transform: 'translateY(0)',
-          },
-          transition: 'all 0.2s',
+          transition: 'all 0.15s ease',
         }}
       >
-        Deselect All
+        Deselect
       </Button>
     </Box>
   );

@@ -16,7 +16,7 @@
  * - 5.4: Allow selecting pixels and removing them
  */
 
-import React, { useRef } from 'react';
+import React, { memo, useRef, useCallback } from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useCanvas } from '../../hooks';
@@ -34,14 +34,16 @@ interface CanvasComponentProps {
  * CanvasComponent renders the pixel art canvas with zoom support and interaction
  * Uses the useCanvas hook to encapsulate rendering and interaction logic
  */
-export const CanvasComponent: React.FC<CanvasComponentProps> = ({
+export const CanvasComponent: React.FC<CanvasComponentProps> = memo(function CanvasComponent({
   width = 800,
   height = 600,
   onDragOver,
   onDrop,
-}) => {
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasPixels = useStore((state) => state.pixels.length > 0);
+  const editMode = useStore((state) => state.editMode);
+  const size = useStore((state) => state.size);
 
   // Use the useCanvas hook to handle all canvas logic
   const { canvasRef, handleMouseDown, handleMouseMove, handleMouseUp } = useCanvas({
@@ -49,15 +51,28 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
     height,
   });
 
+  // Memoized event handlers
+  const onMouseLeave = useCallback(() => {
+    handleMouseUp();
+  }, [handleMouseUp]);
+
+  // Accessibility: Announce canvas state to screen readers
+  const canvasLabel = hasPixels
+    ? `Pixel art canvas, ${size}x${size} pixels, ${editMode} mode active. Use mouse to select pixels.`
+    : 'Empty canvas. Drop an image or paste from clipboard to start editing.';
+
   return (
     <Box
       ref={containerRef}
+      role="application"
+      aria-label={canvasLabel}
       onDragOver={onDragOver}
       onDrop={onDrop}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onMouseLeave={onMouseLeave}
+      tabIndex={0}
       sx={{
         width: '100%',
         height: '100%',
@@ -68,26 +83,35 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
         backgroundColor: 'background.paper',
         overflow: 'auto',
         p: 2,
-        borderRadius: 2,
+        borderRadius: '16px',
         border: '1px solid',
         borderColor: 'divider',
-        backgroundImage:
-          'linear-gradient(45deg, rgba(0,0,0,0.04) 25%, transparent 25%), linear-gradient(-45deg, rgba(0,0,0,0.04) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.04) 75%), linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.04) 75%)',
-        backgroundSize: '24px 24px',
-        backgroundPosition: '0 0, 0 12px, 12px -12px, -12px 0px',
+        boxShadow: (theme) => theme.palette.mode === 'dark' 
+          ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
+          : '0 4px 20px rgba(0, 0, 0, 0.06)',
+        backgroundImage: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%)'
+            : 'linear-gradient(45deg, #f0f0f0 25%, #fafafa 25%), linear-gradient(-45deg, #f0f0f0 25%, #fafafa 25%), linear-gradient(45deg, #fafafa 75%, #f0f0f0 75%), linear-gradient(-45deg, #fafafa 75%, #f0f0f0 75%)',
+        backgroundSize: '20px 20px',
+        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+        outline: 'none',
+        '&:focus-visible': {
+          boxShadow: (theme) => `0 0 0 2px ${alpha(theme.palette.primary.main, 0.3)}`,
+        },
         // Custom scrollbar styling
         '&::-webkit-scrollbar': {
-          width: '8px',
-          height: '8px',
+          width: '6px',
+          height: '6px',
         },
         '&::-webkit-scrollbar-track': {
           background: 'transparent',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: 'rgba(0,0,0,0.25)',
-          borderRadius: '4px',
+          background: 'rgba(0,0,0,0.15)',
+          borderRadius: '3px',
           '&:hover': {
-            background: 'rgba(0,0,0,0.35)',
+            background: 'rgba(0,0,0,0.25)',
           },
         },
       }}
@@ -99,38 +123,52 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
           elevation={0}
           sx={{
             position: 'absolute',
-            inset: 16,
+            inset: 24,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            p: 3,
-            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.82),
-            backdropFilter: 'blur(6px)',
-            border: '1px dashed',
-            borderColor: 'divider',
+            p: 4,
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+            backdropFilter: 'blur(8px)',
+            border: '2px dashed',
+            borderColor: 'grey.300',
+            borderRadius: '16px',
             pointerEvents: 'none',
           }}
         >
           <Box>
-            <Typography variant="h6" fontWeight={800}>
+            <Typography 
+              variant="h6" 
+              fontWeight={700}
+              sx={{ 
+                color: 'text.primary',
+                mb: 1,
+              }}
+            >
               Drop an image to start
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Paste (Ctrl+V) or use “Upload Image”.
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'text.secondary',
+                fontSize: '0.875rem',
+              }}
+            >
+              Paste (Ctrl+V) or use "Upload Image"
             </Typography>
           </Box>
         </Paper>
       )}
       <canvas
         ref={canvasRef}
+        aria-hidden="true"
         style={{
-          // Pixelated rendering CSS (Req 3.1)
           imageRendering: 'pixelated',
-          border: '1px solid rgba(0, 0, 0, 0.25)',
-          borderRadius: '8px',
+          border: '1px solid rgba(0, 0, 0, 0.1)',
+          borderRadius: '12px',
           cursor: 'crosshair',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
           background: 'transparent',
           maxWidth: '100%',
           maxHeight: '100%',
@@ -142,4 +180,4 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = ({
       />
     </Box>
   );
-};
+});

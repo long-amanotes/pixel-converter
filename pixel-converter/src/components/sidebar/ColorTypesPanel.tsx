@@ -21,6 +21,7 @@ export const ColorTypesPanel = () => {
   const activeColorTypeId = useStore((state) => state.activeColorTypeId);
   const setActiveColorType = useStore((state) => state.setActiveColorType);
   const parseColorTypes = useStore((state) => state.parseColorTypes);
+  const clearSelection = useStore((state) => state.clearSelection);
   const pixels = useStore((state) => state.pixels);
 
   // Calculate pixel counts for each color type
@@ -48,6 +49,9 @@ export const ColorTypesPanel = () => {
   const isValid = totalPixels === 0 || assignedPixels === totalPixels;
 
   const handleColorTypeClick = (id: number) => {
+    // Clear selection on canvas when switching/toggling types
+    clearSelection();
+    
     // Toggle selection: if already active, deselect (set to 0)
     if (activeColorTypeId === id) {
       setActiveColorType(0);
@@ -61,23 +65,27 @@ export const ColorTypesPanel = () => {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 2, bgcolor: 'transparent', boxShadow: 'none' }}>
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        p: 2.5, 
+        bgcolor: 'background.paper', 
+        borderRadius: '12px',
+        border: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
       <Typography 
         variant="h6" 
         gutterBottom
         sx={{
-          fontSize: '14px',
+          fontSize: '0.8125rem',
           fontWeight: 600,
           color: 'text.primary',
-          mb: 1.5,
-          pb: 1,
-          borderBottom: '2px solid',
-          borderColor: 'divider',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          mb: 2,
         }}
       >
-        Group Color Type & Statistics
+        Color Types
       </Typography>
 
       <Button
@@ -88,19 +96,21 @@ export const ColorTypesPanel = () => {
         size="small"
         sx={{ 
           mb: 2,
-          boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
+          borderRadius: '10px',
+          py: 1,
+          fontWeight: 600,
+          fontSize: '0.8125rem',
+          textTransform: 'none',
+          boxShadow: 'none',
+          bgcolor: 'primary.main',
           '&:hover': {
-            boxShadow: '0 4px 8px rgba(33, 150, 243, 0.4)',
-            transform: 'translateY(-1px)',
+            bgcolor: 'primary.dark',
+            boxShadow: '0 4px 12px rgba(62, 151, 255, 0.35)',
           },
-          '&:active': {
-            transform: 'translateY(0)',
-            boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
-          },
-          transition: 'all 0.2s',
+          transition: 'all 0.15s ease',
         }}
       >
-        Parse from Group Color
+        Parse from Color Groups
       </Button>
 
       {/* Validation Status */}
@@ -108,12 +118,15 @@ export const ColorTypesPanel = () => {
         <Box
           sx={{
             mb: 2,
-            p: 1,
-            borderRadius: '6px',
+            p: 1.5,
+            borderRadius: '10px',
             bgcolor: isValid ? 'success.light' : 'error.light',
             color: isValid ? 'success.dark' : 'error.dark',
-            fontSize: '13px',
-            fontWeight: 500,
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
           }}
         >
           {isValid ? '✓ Type sum matches total' : `⚠ Mismatch ${assignedPixels} ≠ ${totalPixels}`}
@@ -145,38 +158,39 @@ export const ColorTypesPanel = () => {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
-                  p: 1.25,
-                  borderRadius: '6px',
+                  gap: 1.5,
+                  p: 1.5,
+                  borderRadius: '10px',
                   cursor: 'pointer',
-                  bgcolor: isActive ? 'action.selected' : 'background.paper',
-                  border: '2px solid',
-                  borderColor: isActive ? 'primary.main' : 'transparent',
-                  transition: 'all 0.2s',
+                  bgcolor: isActive ? 'primary.light' : 'grey.50',
+                  border: '1px solid',
+                  borderColor: isActive ? 'primary.main' : 'grey.200',
+                  transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: isActive ? 'action.selected' : 'action.hover',
-                    borderColor: isActive ? 'primary.main' : 'divider',
+                    bgcolor: isActive ? 'primary.light' : 'grey.100',
+                    borderColor: isActive ? 'primary.main' : 'grey.300',
                   },
                 }}
               >
                 <Box
                   sx={{
-                    width: 20,
-                    height: 20,
+                    width: 24,
+                    height: 24,
                     bgcolor: colorType.color,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: '4px',
+                    border: '2px solid',
+                    borderColor: 'background.paper',
+                    borderRadius: '6px',
                     flexShrink: 0,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 />
                 <Typography 
                   variant="body2" 
                   sx={{ 
                     flex: 1,
-                    fontSize: '13px',
-                    fontWeight: isActive ? 500 : 400,
-                    color: 'text.primary',
+                    fontSize: '0.8125rem',
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? 'primary.dark' : 'text.primary',
                   }}
                 >
                   Type {colorType.id}: {pixelCount}px

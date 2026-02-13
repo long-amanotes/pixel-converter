@@ -26,18 +26,21 @@ export const FloatingPixelCount = () => {
         right: 16,
         zIndex: 10,
         bgcolor: 'background.paper',
-        border: '2px solid',
-        borderColor: 'primary.main',
+        border: '1px solid',
+        borderColor: 'divider',
         borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        boxShadow: (theme) => theme.palette.mode === 'dark' 
+          ? '0 4px 20px rgba(0, 0, 0, 0.3)' 
+          : '0 4px 20px rgba(0, 0, 0, 0.08)',
         px: 2.5,
         py: 1.5,
-        minWidth: 140,
+        minWidth: 120,
         textAlign: 'center',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.15s ease',
         '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
+          boxShadow: (theme) => theme.palette.mode === 'dark' 
+            ? '0 6px 24px rgba(0, 0, 0, 0.4)' 
+            : '0 6px 24px rgba(0, 0, 0, 0.12)',
         },
       }}
     >
@@ -45,12 +48,12 @@ export const FloatingPixelCount = () => {
         variant="caption"
         sx={{
           display: 'block',
-          fontSize: '10px',
+          fontSize: '0.625rem',
           fontWeight: 600,
           color: 'text.secondary',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
-          mb: 0.5,
+          mb: 0.25,
         }}
       >
         Total Pixels
@@ -58,7 +61,7 @@ export const FloatingPixelCount = () => {
       <Typography
         variant="h5"
         sx={{
-          fontSize: '24px',
+          fontSize: '1.375rem',
           fontWeight: 700,
           color: 'primary.main',
           lineHeight: 1,

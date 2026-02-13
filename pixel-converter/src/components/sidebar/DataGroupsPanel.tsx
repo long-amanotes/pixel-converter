@@ -34,6 +34,7 @@ export const DataGroupsPanel = () => {
   const updateDataGroupName = useStore((state) => state.updateDataGroupName);
   const setActiveDataGroup = useStore((state) => state.setActiveDataGroup);
   const setEditMode = useStore((state) => state.setEditMode);
+  const clearSelection = useStore((state) => state.clearSelection);
   const pixels = useStore((state) => state.pixels);
 
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
@@ -90,6 +91,15 @@ export const DataGroupsPanel = () => {
   };
 
   const handleGroupClick = (id: number) => {
+    // Clear selection on canvas when switching/toggling groups
+    clearSelection();
+    
+    // Toggle: if clicking the same group, deselect it (set to -1 or 0)
+    if (activeDataGroupId === id) {
+      setActiveDataGroup(0); // Deselect by setting to "None" group
+      return;
+    }
+    
     setActiveDataGroup(id);
     // Automatically switch to "Group Data" edit mode (Requirement 6.6)
     setEditMode('group');
@@ -115,23 +125,27 @@ export const DataGroupsPanel = () => {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 2, bgcolor: 'transparent', boxShadow: 'none' }}>
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        p: 2.5, 
+        bgcolor: 'background.paper', 
+        borderRadius: '12px',
+        border: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
       <Typography 
         variant="h6" 
         gutterBottom
         sx={{
-          fontSize: '14px',
+          fontSize: '0.8125rem',
           fontWeight: 600,
           color: 'text.primary',
-          mb: 1.5,
-          pb: 1,
-          borderBottom: '2px solid',
-          borderColor: 'divider',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          mb: 2,
         }}
       >
-        Group Data
+        Data Groups
       </Typography>
 
       {/* Action Buttons */}
@@ -143,16 +157,17 @@ export const DataGroupsPanel = () => {
           size="small"
           fullWidth
           sx={{
-            boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
+            borderRadius: '10px',
+            py: 0.75,
+            fontWeight: 600,
+            fontSize: '0.75rem',
+            textTransform: 'none',
+            boxShadow: 'none',
+            bgcolor: 'primary.main',
             '&:hover': {
-              boxShadow: '0 4px 8px rgba(33, 150, 243, 0.4)',
-              transform: 'translateY(-1px)',
+              bgcolor: 'primary.dark',
             },
-            '&:active': {
-              transform: 'translateY(0)',
-              boxShadow: '0 2px 4px rgba(33, 150, 243, 0.3)',
-            },
-            transition: 'all 0.2s',
+            transition: 'all 0.15s ease',
           }}
         >
           Add
@@ -165,13 +180,16 @@ export const DataGroupsPanel = () => {
           fullWidth
           disabled={activeDataGroupId === 0}
           sx={{
+            borderRadius: '10px',
+            py: 0.75,
+            fontWeight: 600,
+            fontSize: '0.75rem',
+            textTransform: 'none',
+            borderWidth: 1.5,
             '&:hover': {
-              transform: 'translateY(-1px)',
+              borderWidth: 1.5,
             },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
-            transition: 'all 0.2s',
+            transition: 'all 0.15s ease',
           }}
         >
           Delete
@@ -184,13 +202,16 @@ export const DataGroupsPanel = () => {
           fullWidth
           disabled={activeDataGroupId === 0}
           sx={{
+            borderRadius: '10px',
+            py: 0.75,
+            fontWeight: 600,
+            fontSize: '0.75rem',
+            textTransform: 'none',
+            borderWidth: 1.5,
             '&:hover': {
-              transform: 'translateY(-1px)',
+              borderWidth: 1.5,
             },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
-            transition: 'all 0.2s',
+            transition: 'all 0.15s ease',
           }}
         >
           Clear
@@ -210,16 +231,16 @@ export const DataGroupsPanel = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1,
-                p: 1.25,
-                borderRadius: '6px',
-                bgcolor: isActive ? 'action.selected' : 'background.paper',
-                border: '2px solid',
-                borderColor: isActive ? 'primary.main' : 'transparent',
-                transition: 'all 0.2s',
+                gap: 1.5,
+                p: 1.5,
+                borderRadius: '10px',
+                bgcolor: isActive ? 'primary.light' : 'grey.50',
+                border: '1px solid',
+                borderColor: isActive ? 'primary.main' : 'grey.200',
+                transition: 'all 0.15s ease',
                 '&:hover': {
-                  bgcolor: isActive ? 'action.selected' : 'action.hover',
-                  borderColor: isActive ? 'primary.main' : 'divider',
+                  bgcolor: isActive ? 'primary.light' : 'grey.100',
+                  borderColor: isActive ? 'primary.main' : 'grey.300',
                 },
               }}
             >
@@ -256,12 +277,12 @@ export const DataGroupsPanel = () => {
                 ) : (
                   <Typography
                     variant="body2"
-                    fontWeight={isActive ? 500 : 400}
+                    fontWeight={isActive ? 600 : 500}
                     onDoubleClick={() => handleStartEdit(group.id, group.name)}
                     sx={{
                       cursor: group.id === 0 ? 'pointer' : 'text',
-                      fontSize: '13px',
-                      color: 'text.primary',
+                      fontSize: '0.8125rem',
+                      color: isActive ? 'primary.dark' : 'text.primary',
                     }}
                   >
                     {group.name}
@@ -271,14 +292,14 @@ export const DataGroupsPanel = () => {
               <Typography
                 variant="caption"
                 sx={{
-                  bgcolor: isActive ? 'primary.main' : 'action.disabledBackground',
+                  bgcolor: isActive ? 'primary.main' : 'grey.200',
                   color: isActive ? 'primary.contrastText' : 'text.secondary',
-                  px: 1,
+                  px: 1.25,
                   py: 0.5,
-                  borderRadius: '12px',
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  minWidth: '32px',
+                  borderRadius: '20px',
+                  fontSize: '0.6875rem',
+                  fontWeight: 600,
+                  minWidth: '36px',
                   textAlign: 'center',
                 }}
               >
