@@ -47,6 +47,7 @@ export const CanvasComponent: React.FC<CanvasComponentProps> = memo(function Can
       ref={containerRef}
       role="application"
       aria-label={canvasLabel}
+      data-tour="canvas-area"
       onDragOver={onDragOver}
       onDrop={onDrop}
       onMouseDown={handleMouseDown}

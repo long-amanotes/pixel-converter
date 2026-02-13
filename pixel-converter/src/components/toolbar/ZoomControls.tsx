@@ -27,6 +27,7 @@ export const ZoomControls: React.FC = () => {
 
   return (
     <Box
+      data-tour="zoom-controls"
       sx={{
         display: 'flex',
         alignItems: 'center',

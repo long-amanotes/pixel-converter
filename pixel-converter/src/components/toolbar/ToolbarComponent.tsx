@@ -179,7 +179,7 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
       )}
 
       {/* Upload Button */}
-      <Box>
+      <Box data-tour="upload-btn">
         <input
           ref={fileInputRef}
           type="file"
@@ -218,7 +218,7 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
 
       {/* Undo */}
       <Tooltip title={undoStackSize === 0 ? 'Nothing to undo' : `Undo (${undoStackSize})`} arrow>
-        <span>
+        <span data-tour="undo-btn">
           <IconButton
             size="small"
             onClick={() => undo()}
@@ -283,7 +283,7 @@ export const ToolbarComponent: React.FC<ToolbarComponentProps> = ({
       </FormControl>
 
       {/* Edit Mode with visual indicator */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} data-tour="mode-selector">
         <FormControl size="small" sx={{ minWidth: 130, ...inputStyles }}>
           <InputLabel>Mode</InputLabel>
           <Select

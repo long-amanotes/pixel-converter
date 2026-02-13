@@ -33,13 +33,13 @@ import {
   DataObject as DataIcon,
   FileDownload as ExportIcon,
   Brush as BrushIcon,
-  ZoomIn as ZoomIcon,
-  Undo as UndoIcon,
+  PlayArrow as PlayIcon,
 } from '@mui/icons-material';
 
 export type UserGuideDialogProps = {
   open: boolean;
   onClose: () => void;
+  onStartTour?: () => void;
 };
 
 interface TabPanelProps {
@@ -54,7 +54,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => (
   </Box>
 );
 
-export const UserGuideDialog: React.FC<UserGuideDialogProps> = ({ open, onClose }) => {
+export const UserGuideDialog: React.FC<UserGuideDialogProps> = ({ open, onClose, onStartTour }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const [tabValue, setTabValue] = useState(0);
@@ -401,8 +401,35 @@ export const UserGuideDialog: React.FC<UserGuideDialogProps> = ({ open, onClose 
           bgcolor: isDark ? alpha('#FFFFFF', 0.02) : alpha('#000000', 0.01),
           borderTop: '1px solid',
           borderColor: 'divider',
+          justifyContent: 'space-between',
         }}
       >
+        {onStartTour && (
+          <Button
+            onClick={() => {
+              onClose();
+              setTimeout(() => onStartTour(), 300);
+            }}
+            variant="outlined"
+            startIcon={<PlayIcon />}
+            sx={{
+              borderRadius: '8px',
+              px: 3,
+              py: 1,
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              textTransform: 'none',
+              borderColor: isDark ? alpha('#FFFFFF', 0.2) : alpha('#000000', 0.15),
+              color: 'text.primary',
+              '&:hover': {
+                borderColor: 'primary.main',
+                bgcolor: isDark ? alpha('#3E97FF', 0.1) : alpha('#3E97FF', 0.06),
+              },
+            }}
+          >
+            Bắt đầu Tour hướng dẫn
+          </Button>
+        )}
         <Button
           onClick={onClose}
           variant="contained"

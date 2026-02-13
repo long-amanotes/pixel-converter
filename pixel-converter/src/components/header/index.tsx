@@ -127,6 +127,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ onOpenHelp, on
           <IconButton
             size="small"
             onClick={setMode}
+            data-tour="theme-toggle"
             sx={{
               width: 36,
               height: 36,
@@ -153,6 +154,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ onOpenHelp, on
             <IconButton
               size="small"
               onClick={onOpenGuide}
+              data-tour="guide-btn"
               sx={{
                 width: 36,
                 height: 36,

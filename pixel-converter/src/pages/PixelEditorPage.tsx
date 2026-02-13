@@ -14,7 +14,7 @@ import {
 } from '@mui/icons-material';
 
 import { CanvasComponent } from '../components/canvas';
-import { HintPanel, UserGuideDialog } from '../components/common';
+import { HintPanel, UserGuideDialog, GuidedTour, useGuidedTour } from '../components/common';
 import { TabbedSidebar } from '../components/sidebar';
 import { ToolbarComponent } from '../components/toolbar';
 import { HeaderComponent } from '../components/header';
@@ -53,6 +53,8 @@ export const PixelEditorPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+
+  const { showTour, startTour, finishTour } = useGuidedTour();
 
   const { notify } = useToast();
   const { isRestoring } = useStorageRestore();
@@ -255,7 +257,12 @@ export const PixelEditorPage = () => {
       </Box>
 
       <HintPanel open={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
-      <UserGuideDialog open={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      <UserGuideDialog 
+        open={isGuideOpen} 
+        onClose={() => setIsGuideOpen(false)} 
+        onStartTour={startTour}
+      />
+      <GuidedTour run={showTour} onFinish={finishTour} />
     </Box>
   );
 };

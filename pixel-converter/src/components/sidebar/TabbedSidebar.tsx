@@ -95,6 +95,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
         onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
+        data-tour="sidebar-tabs"
         sx={{
           minHeight: 44,
           bgcolor: isDark ? alpha('#FFFFFF', 0.02) : alpha('#000000', 0.01),
@@ -158,6 +159,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
       <Box
         role="tabpanel"
         aria-labelledby={`tab-${tabs[activeIndex]?.id}`}
+        data-tour="palette-panel"
         sx={{
           flex: 1,
           overflowY: 'auto',
