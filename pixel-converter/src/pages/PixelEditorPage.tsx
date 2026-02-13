@@ -3,7 +3,7 @@
  * Metronic 9 inspired UI/UX design
  */
 
-import { useMemo, useState, Suspense, lazy } from 'react';
+import { useMemo, useState, Suspense, lazy, useCallback } from 'react';
 import { Box, Drawer, useMediaQuery, useTheme, CircularProgress, Typography, alpha } from '@mui/material';
 import {
   Category as CategoryIcon,
@@ -15,7 +15,7 @@ import {
 
 import { CanvasComponent } from '../components/canvas';
 import { HintPanel, UserGuideDialog, GuidedTour, useGuidedTour } from '../components/common';
-import { TabbedSidebar } from '../components/sidebar';
+import { TabbedSidebar, SidebarTabItem } from '../components/sidebar';
 import { ToolbarComponent } from '../components/toolbar';
 import { HeaderComponent } from '../components/header';
 import { useToast } from '../contexts/toast';
@@ -53,8 +53,14 @@ export const PixelEditorPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [activeSidebarTab, setActiveSidebarTab] = useState('palette');
 
   const { showTour, startTour, finishTour } = useGuidedTour();
+
+  // Callback for tour to switch tabs
+  const handleTourTabChange = useCallback((tabId: string) => {
+    setActiveSidebarTab(tabId);
+  }, []);
 
   const { notify } = useToast();
   const { isRestoring } = useStorageRestore();
@@ -74,65 +80,72 @@ export const PixelEditorPage = () => {
     },
   });
 
+  const sidebarTabs: SidebarTabItem[] = useMemo(
+    () => [
+      {
+        id: 'palette',
+        label: 'Palette',
+        icon: <PaletteIcon sx={{ fontSize: 18 }} />,
+        content: (
+          <Suspense fallback={<PanelFallback />}>
+            <PalettePanel />
+          </Suspense>
+        ),
+      },
+      {
+        id: 'groups',
+        label: 'Groups',
+        icon: <ColorLensIcon sx={{ fontSize: 18 }} />,
+        content: (
+          <Suspense fallback={<PanelFallback />}>
+            <ColorGroupsPanel />
+          </Suspense>
+        ),
+      },
+      {
+        id: 'types',
+        label: 'Types',
+        icon: <CategoryIcon sx={{ fontSize: 18 }} />,
+        content: (
+          <Suspense fallback={<PanelFallback />}>
+            <ColorTypesPanel />
+          </Suspense>
+        ),
+      },
+      {
+        id: 'data',
+        label: 'Data',
+        icon: <DataObjectIcon sx={{ fontSize: 18 }} />,
+        content: (
+          <Suspense fallback={<PanelFallback />}>
+            <DataGroupsPanel />
+          </Suspense>
+        ),
+      },
+      {
+        id: 'export',
+        label: 'Export',
+        icon: <ExportIcon sx={{ fontSize: 18 }} />,
+        content: (
+          <Suspense fallback={<PanelFallback />}>
+            <ExportImportPanel />
+          </Suspense>
+        ),
+      },
+    ],
+    []
+  );
+
   const sidebar = useMemo(
     () => (
       <TabbedSidebar
         title="Workspace"
-        tabs={[
-          {
-            id: 'palette',
-            label: 'Palette',
-            icon: <PaletteIcon sx={{ fontSize: 18 }} />,
-            content: (
-              <Suspense fallback={<PanelFallback />}>
-                <PalettePanel />
-              </Suspense>
-            ),
-          },
-          {
-            id: 'groups',
-            label: 'Groups',
-            icon: <ColorLensIcon sx={{ fontSize: 18 }} />,
-            content: (
-              <Suspense fallback={<PanelFallback />}>
-                <ColorGroupsPanel />
-              </Suspense>
-            ),
-          },
-          {
-            id: 'types',
-            label: 'Types',
-            icon: <CategoryIcon sx={{ fontSize: 18 }} />,
-            content: (
-              <Suspense fallback={<PanelFallback />}>
-                <ColorTypesPanel />
-              </Suspense>
-            ),
-          },
-          {
-            id: 'data',
-            label: 'Data',
-            icon: <DataObjectIcon sx={{ fontSize: 18 }} />,
-            content: (
-              <Suspense fallback={<PanelFallback />}>
-                <DataGroupsPanel />
-              </Suspense>
-            ),
-          },
-          {
-            id: 'export',
-            label: 'Export',
-            icon: <ExportIcon sx={{ fontSize: 18 }} />,
-            content: (
-              <Suspense fallback={<PanelFallback />}>
-                <ExportImportPanel />
-              </Suspense>
-            ),
-          },
-        ]}
+        tabs={sidebarTabs}
+        activeTabId={activeSidebarTab}
+        onTabChange={setActiveSidebarTab}
       />
     ),
-    []
+    [sidebarTabs, activeSidebarTab]
   );
 
   // Loading state
@@ -262,7 +275,7 @@ export const PixelEditorPage = () => {
         onClose={() => setIsGuideOpen(false)} 
         onStartTour={startTour}
       />
-      <GuidedTour run={showTour} onFinish={finishTour} />
+      <GuidedTour run={showTour} onFinish={finishTour} onTabChange={handleTourTabChange} />
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useMemo, useState, memo, useCallback } from 'react';
+import React, { ReactElement, ReactNode, useMemo, useState, memo, useCallback, useEffect } from 'react';
 import { Badge, Box, Tab, Tabs, Typography, alpha, useTheme } from '@mui/material';
 
 export type SidebarTabItem = {
@@ -14,6 +14,7 @@ type TabbedSidebarProps = {
   width?: number;
   tabs: SidebarTabItem[];
   initialTabId?: string;
+  activeTabId?: string; // Controlled mode
   onTabChange?: (tabId: string) => void;
 };
 
@@ -22,16 +23,27 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
   width = 360,
   tabs,
   initialTabId,
+  activeTabId: controlledTabId,
   onTabChange,
 }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const tabIds = useMemo(() => tabs.map((t) => t.id), [tabs]);
 
-  const [activeTabId, setActiveTabId] = useState(() => {
+  const [internalTabId, setInternalTabId] = useState(() => {
     if (initialTabId && tabIds.includes(initialTabId)) return initialTabId;
     return tabIds[0] ?? '';
   });
+
+  // Support controlled mode
+  const activeTabId = controlledTabId !== undefined ? controlledTabId : internalTabId;
+
+  // Sync internal state when controlled value changes
+  useEffect(() => {
+    if (controlledTabId !== undefined && tabIds.includes(controlledTabId)) {
+      setInternalTabId(controlledTabId);
+    }
+  }, [controlledTabId, tabIds]);
 
   const activeIndex = Math.max(
     0,
@@ -42,7 +54,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
     (_e: React.SyntheticEvent, nextIndex: number) => {
       const next = tabs[nextIndex];
       if (!next) return;
-      setActiveTabId(next.id);
+      setInternalTabId(next.id);
       onTabChange?.(next.id);
     },
     [tabs, onTabChange]
@@ -50,6 +62,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
 
   return (
     <Box
+      data-tour="sidebar-container"
       sx={{
         width,
         height: '100%',
@@ -127,6 +140,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
             height: 2,
             bgcolor: 'primary.main',
             borderRadius: '2px 2px 0 0',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           },
         }}
       >
@@ -134,6 +148,7 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
           <Tab
             key={t.id}
             id={`tab-${t.id}`}
+            data-tour={`tab-${t.id}`}
             aria-controls={`tabpanel-${t.id}`}
             aria-selected={index === activeIndex}
             {...(t.icon && { icon: t.icon })}
@@ -159,13 +174,14 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
       <Box
         role="tabpanel"
         aria-labelledby={`tab-${tabs[activeIndex]?.id}`}
-        data-tour="palette-panel"
+        data-tour={`panel-${tabs[activeIndex]?.id}`}
         sx={{
           flex: 1,
           overflowY: 'auto',
           overflowX: 'hidden',
           p: 2,
           bgcolor: isDark ? '#151521' : '#F8F9FA',
+          transition: 'opacity 0.2s ease',
         }}
       >
         {tabs[activeIndex]?.content}
@@ -173,4 +189,3 @@ export const TabbedSidebar: React.FC<TabbedSidebarProps> = memo(function TabbedS
     </Box>
   );
 });
-
